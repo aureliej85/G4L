@@ -18,10 +18,11 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private DrawerLayout drawer;
     private Toolbar toolbar;
+    private NavigationView sideNav;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,8 +34,8 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnNavigationItemSelectedListener(bottomNavListener);
 
         // NAVIGATION VIEW
-        NavigationView sideNav = findViewById((R.id.nav_view));
-        sideNav.setNavigationItemSelectedListener(navListener);
+        sideNav = findViewById((R.id.nav_view));
+        sideNav.setNavigationItemSelectedListener(this);
 
 
         // TOOLBAR
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private NavigationView.OnNavigationItemSelectedListener navListener = new NavigationView.OnNavigationItemSelectedListener() {
+    /*private NavigationView.OnNavigationItemSelectedListener navListener = new NavigationView.OnNavigationItemSelectedListener() {
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
             switch(menuItem.getItemId()) {
@@ -130,8 +131,31 @@ public class MainActivity extends AppCompatActivity {
             drawer.closeDrawer(GravityCompat.START);
             return true;
         }
-    };
+    };*/
 
+    @SuppressWarnings("StatementWithEmptyBody")
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
+        Log.i("MainACtivity", "onNavigationItemSelected");
 
+        switch(menuItem.getItemId()) {
 
+            case R.id.nav_lunch:
+                Log.i("MainACtivity", "onNavigationItemSelected: navLunch ");
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new WorkmatesFragment()).commit();
+                break;
+            case R.id.nav_settings:
+                Log.i("MainACtivity", "onNavigationItemSelected: navSettings ");
+                Toast toast2 = Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT);
+                toast2.show();
+                break;
+            case R.id.nav_logout:
+                Log.i("MainACtivity", "onNavigationItemSelected: navLogout ");
+                FirebaseAuth.getInstance().signOut();
+                redirectAfterSignOut();
+                break;
+        }
+        drawer.closeDrawer(GravityCompat.START);
+        return true;
+    }
 }
