@@ -15,6 +15,7 @@
             android:background="@color/colorPrimaryDark"
             app:titleTextColor="@android:color/white" />
 
+
     </com.google.android.material.appbar.AppBarLayout>
 
     <FrameLayout

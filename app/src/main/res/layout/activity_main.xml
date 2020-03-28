@@ -9,10 +9,13 @@
     android:fitsSystemWindows="true"
     tools:openDrawer="start">
 
+
     <include
         layout="@layout/bottom_menu_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
+
+
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"
@@ -20,6 +23,8 @@
         android:layout_height="match_parent"
         app:headerLayout="@layout/nav_header"
         app:menu="@menu/settings_navigation"
+        android:background="@color/colorPrimaryDark"
+        app:itemTextColor="@android:color/white"
         android:layout_gravity="start" />
 
 

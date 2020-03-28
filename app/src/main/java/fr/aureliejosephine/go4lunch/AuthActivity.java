@@ -34,9 +34,10 @@ public class AuthActivity extends AppCompatActivity{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_auth);
-
+        //setContentView(R.layout.activity_auth);
         checkIfUserIsLogged();
+        emailAuth();
+
     }
 
 
@@ -45,17 +46,18 @@ public class AuthActivity extends AppCompatActivity{
     // ACTIONS
     // --------------------
 
-    public void emailAuth(View view) {
+    public void emailAuth() {
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
-                        //.setTheme(R.style.LoginTheme)
+                        .setTheme(R.style.LoginTheme)
                         .setAvailableProviders(
-                                Arrays.asList(new AuthUI.IdpConfig.Builder(AuthUI.EMAIL_PROVIDER).build(), //EMAIL
-                                        new AuthUI.IdpConfig.Builder(AuthUI.GOOGLE_PROVIDER).build(), //GOOGLE
-                                        new AuthUI.IdpConfig.Builder(AuthUI.FACEBOOK_PROVIDER).build())) // FACEBOOK)) // SUPPORT GOOGLE))
+                                Arrays.asList(
+                                        new AuthUI.IdpConfig.FacebookBuilder().build(), //GOOGLE
+                                        new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.EmailBuilder().build())) //EMAIL)) // FACEBOOK)) // SUPPORT GOOGLE))
                         .setIsSmartLockEnabled(false, true)
-                        //.setLogo(R.drawable.ic_logo_auth)
+                        .setLogo(R.drawable.logo_g4l)
                         .build(),
                 RC_SIGN_IN);
         Log.i("AuthActivity", "email Auth");
@@ -87,14 +89,14 @@ public class AuthActivity extends AppCompatActivity{
                     Log.e("Login","Login canceled by User");
                     return;
                 }
-                if (response.getErrorCode() == ErrorCodes.NO_NETWORK) {
+                /*if (response.getError() == ErrorCodes.NO_NETWORK) {
                     Log.e("Login","No Internet Connection");
                     return;
                 }
                 if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
                     Log.e("Login","Unknown Error");
                     return;
-                }
+                }*/
             }
         }
     }

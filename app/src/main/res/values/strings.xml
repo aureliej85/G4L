@@ -7,7 +7,12 @@
     <string name="navigation_drawer_open">open navigation drawer</string>
     <string name="navigation_drawer_close">close navigation drawer</string>
 
+    <string name="info_no_email_found"> email</string>
+    <string name="info_no_username_found">Pas de username</string>
+
     <!-- FACEBOOK PURPOSE -->
     <string name="facebook_application_id" translatable="false">2592962261030810</string>
     <string name="facebook_login_protocol_scheme" translatable="false" tools:ignore="UnusedResources">fb2592962261030810</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_maps2">Map</string>
 </resources>
