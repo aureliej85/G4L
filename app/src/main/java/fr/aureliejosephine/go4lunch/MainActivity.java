@@ -74,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         configureHeaderNavigationView();
 
-        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment(R.layout.activity_maps)).commit(); // FRAGMENT CONTAINER
+        getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit(); // FRAGMENT CONTAINER
 
     }
 
@@ -157,16 +157,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     switch(menuItem.getItemId()) {
 
                         case R.id.nav_map:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new Fragment(R.layout.activity_maps)).commit();
                             Log.i("MainActivity", "onNavigationItemSelected: activity_maps ");
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
                             break;
                         case R.id.nav_list:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ListFragment()).commit();
                             Log.i("MainActivity", "onNavigationItemSelected: ListFragment ");
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ListFragment()).commit();
                             break;
                         case R.id.nav_workmates:
-                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new WorkmatesFragment()).commit();
                             Log.i("MainActivity", "onNavigationItemSelected: WorkmatesFragment ");
+                            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new WorkmatesFragment()).commit();
                             break;
                     }
 
