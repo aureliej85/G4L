@@ -7,11 +7,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import fr.aureliejosephine.go4lunch.models.User;
 
-/**
- * Created by Philippe on 30/01/2018.
- */
 
 public class UserHelper {
+    
 
     private static final String COLLECTION_NAME = "users";
 
@@ -38,8 +36,15 @@ public class UserHelper {
 
     // --- UPDATE ---
 
-    public static Task<Void> updateUsername(String username, String uid) {
-        return UserHelper.getUsersCollection().document(uid).update("username", username);
+    public static Task<Void> updateUsernameAndEmail(String username, String uEmail,  String uid) {
+        User user = new User();
+        user.setUsername(username);
+        return UserHelper.getUsersCollection().document(uid).update("username", username, "email", uEmail);
+    }
+
+
+    public static Task<Void> updatePicture(String urlPicture, String uid) {
+        return UserHelper.getUsersCollection().document(uid).update("picture", urlPicture);
     }
 
 

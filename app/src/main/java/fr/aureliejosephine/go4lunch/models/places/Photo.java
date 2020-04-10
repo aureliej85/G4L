@@ -13,7 +13,7 @@ public class Photo {
     private Integer height;
     @SerializedName("html_attributions")
     @Expose
-    private List<String> htmlAttributions = new ArrayList<String>();
+    private List<String> htmlAttributions = null;
     @SerializedName("photo_reference")
     @Expose
     private String photoReference;

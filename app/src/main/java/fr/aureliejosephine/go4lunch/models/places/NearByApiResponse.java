@@ -10,13 +10,10 @@ public class NearByApiResponse {
 
     @SerializedName("html_attributions")
     @Expose
-    private List<Object> htmlAttributions = new ArrayList<Object>();
-    @SerializedName("next_page_token")
-    @Expose
-    private String nextPageToken;
+    private List<Object> htmlAttributions = null;
     @SerializedName("results")
     @Expose
-    private List<Result> results = new ArrayList<Result>();
+    private List<Result> results = null;
     @SerializedName("status")
     @Expose
     private String status;
@@ -39,23 +36,7 @@ public class NearByApiResponse {
         this.htmlAttributions = htmlAttributions;
     }
 
-    /**
-     *
-     * @return
-     * The nextPageToken
-     */
-    public String getNextPageToken() {
-        return nextPageToken;
-    }
 
-    /**
-     *
-     * @param nextPageToken
-     * The next_page_token
-     */
-    public void setNextPageToken(String nextPageToken) {
-        this.nextPageToken = nextPageToken;
-    }
 
     /**
      *

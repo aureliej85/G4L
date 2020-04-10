@@ -1,4 +1,4 @@
-package fr.aureliejosephine.go4lunch;
+package fr.aureliejosephine.go4lunch.ui;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -8,10 +8,14 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
+import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.api.UserHelper;
+import fr.aureliejosephine.go4lunch.ui.fragments.ListFragment;
+import fr.aureliejosephine.go4lunch.ui.fragments.MapsFragment;
+import fr.aureliejosephine.go4lunch.ui.fragments.SettingsFragment;
+import fr.aureliejosephine.go4lunch.ui.fragments.WorkmatesFragment;
 
-import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import android.content.Intent;
 import android.location.Address;
@@ -32,15 +36,16 @@ import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Toolbar toolbar;
     private NavigationView sideNav;
     private GoogleMap map;
+    private FirebaseFirestore firebaseFirestore;
 
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
@@ -65,14 +71,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
         configureBottomMenu();
-
         configureNavigationView();
-
         configureToolbar();
-
         configureDrawer();
-
         configureHeaderNavigationView();
+
+        firebaseFirestore = FirebaseFirestore.getInstance();
+
+        canWeCreateNewUser();
+
+
+
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit(); // FRAGMENT CONTAINER
 
@@ -157,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     switch(menuItem.getItemId()) {
 
                         case R.id.nav_map:
-                            Log.i("MainActivity", "onNavigationItemSelected: activity_maps ");
+                            Log.i("MainActivity", "onNavigationItemSelected: fragment_maps ");
                             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit();
                             break;
                         case R.id.nav_list:
@@ -195,8 +204,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.nav_settings:
                 Log.i("MainACtivity", "onNavigationItemSelected: navSettings ");
-                Toast toast2 = Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_SHORT);
-                toast2.show();
+                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).commit();
                 break;
             case R.id.nav_logout:
                 Log.i("MainACtivity", "onNavigationItemSelected: navLogout ");
@@ -291,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             uNameTv.setText(username);
             uEmailTv.setText(email);
         }
-}
+    }
 
 
 
@@ -303,6 +311,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             super.onBackPressed();
         }
     }
+
+
+    private void canWeCreateNewUser(){
+        firebaseFirestore.collection("users").document(getCurrentUser().getUid()).get()
+                .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.getResult().exists()){
+
+                            Toast.makeText(MainActivity.this, "Tu es déjà dans la BDD", Toast.LENGTH_SHORT).show();
+                        } else {
+                            createUserInFirestore();
+                        }
+                    }
+                });
+    }
+
+    private void createUserInFirestore(){
+
+        if (this.getCurrentUser() != null){
+
+            String urlPicture = (this.getCurrentUser().getPhotoUrl() != null) ? this.getCurrentUser().getPhotoUrl().toString() : null;
+            String username = this.getCurrentUser().getDisplayName();
+            String uid = this.getCurrentUser().getUid();
+            String uEmail = this.getCurrentUser().getEmail();
+
+            UserHelper.createUser(uid, username, urlPicture, uEmail).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(getApplicationContext(), "wayaye", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
 
 
     @Nullable
