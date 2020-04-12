@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.api.UserHelper;
+import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.ui.fragments.ListFragment;
 import fr.aureliejosephine.go4lunch.ui.fragments.MapsFragment;
 import fr.aureliejosephine.go4lunch.ui.fragments.SettingsFragment;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView sideNav;
     private GoogleMap map;
     private FirebaseFirestore firebaseFirestore;
+    private UserRepository userRepository;
 
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
@@ -79,9 +81,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         firebaseFirestore = FirebaseFirestore.getInstance();
 
         canWeCreateNewUser();
-
-
-
 
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit(); // FRAGMENT CONTAINER
 
@@ -294,6 +293,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             //Get email & username from Firebase
             String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
             String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(R.string.info_no_username_found) : this.getCurrentUser().getDisplayName();
+
+            //String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
+            //String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(R.string.info_no_username_found) : this.getCurrentUser().getDisplayName();
 
             //Update views with data
             uNameTv.setText(username);

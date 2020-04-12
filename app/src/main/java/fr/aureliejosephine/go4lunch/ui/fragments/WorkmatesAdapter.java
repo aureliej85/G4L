@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.api.UserHelper;
 import fr.aureliejosephine.go4lunch.models.User;
 
 
@@ -26,7 +27,7 @@ import java.util.List;
 
 public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.MyViewHolder> {
 
-    private List<User> usersList = new ArrayList<>();
+    private List<User> usersList;
 
 
     public WorkmatesAdapter(Context context, List<User> usersList){
@@ -47,14 +48,13 @@ public class WorkmatesAdapter extends RecyclerView.Adapter<WorkmatesAdapter.MyVi
 
     @Override
     public void onBindViewHolder(MyViewHolder holder, int position) {
-        User user = usersList.get(position);
 
         Glide.with(holder.userPic.getContext())
-                .load(user.getPicture())
+                .load(usersList.get(position).getPicture())
                 .apply(RequestOptions.circleCropTransform())
                 .into(holder.userPic);
 
-        holder.descrUser.setText(user.getUsername() + " n'a pas encore fait son choix");
+        holder.descrUser.setText(usersList.get(position).getUsername() + " n'a pas encore fait son choix");
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
