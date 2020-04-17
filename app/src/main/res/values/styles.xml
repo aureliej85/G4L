@@ -14,12 +14,17 @@
     </style>
 
     <style name="LoginTheme" parent="FirebaseUI">
-        <item name="colorPrimary">@android:color/transparent</item>
+        <item name="colorPrimary">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">@android:color/transparent</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@android:color/white</item>
        <item name="android:windowBackground">@drawable/background</item>
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:textColor">@android:color/black</item> <!-- only button text -->
+        <item name="android:editTextColor">@android:color/white</item>
+        <item name="android:textColorHint">@android:color/white</item> <!-- labels -->
+        <item name="android:editTextStyle">@android:color/white</item>
+
     </style>
 
    <!--<style name="FirebaseUI.AuthMethodPicker.Logo">

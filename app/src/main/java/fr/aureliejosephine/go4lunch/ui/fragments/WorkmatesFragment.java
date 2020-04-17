@@ -61,7 +61,12 @@ public class WorkmatesFragment extends Fragment {
             @Override
             protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull User model) {
 
-                holder.descrTv.setText(model.getUsername());
+                if(model.getRestaurantName() == null){
+                    holder.descrTv.setText(model.getUsername() + " n'a pas encore choisie");
+                } else {
+                    holder.descrTv.setText(model.getUsername() + " mangera au " + model.getRestaurantName());
+                }
+
 
                 Glide.with(holder.userPic.getContext())
                         .load(model.getPicture())

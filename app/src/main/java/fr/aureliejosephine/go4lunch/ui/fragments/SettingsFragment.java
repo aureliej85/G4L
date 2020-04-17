@@ -6,31 +6,58 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.api.UserHelper;
+import fr.aureliejosephine.go4lunch.ui.BaseFragment;
 
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends BaseFragment {
 
     private TextInputEditText name;
     private TextInputEditText email;
     private TextView saveParams;
+    private TextView deleteAccount;
     @Nullable
     private ImageView workmatePic;
+    private static final int RC_SIGN_IN = 123;
+
+
+
+
+        //FOR DATA
+        // 2 - Identify each Http Request
+        private static final int SIGN_OUT_TASK = 10;
+        private static final int DELETE_USER_TASK = 20;
+
+
+            // --------------------
+            // ACTIONS
+            // --------------------
+
+
+
+        // --------------------
+        // UI
+        // --------------------
+
+
+
+        // 3 - Create OnCompleteListener called after tasks ended
+
+
 
 
     @Nullable
@@ -50,14 +77,16 @@ public class SettingsFragment extends Fragment {
         email = getView().findViewById(R.id.emailEt);
         workmatePic = getView().findViewById(R.id.workmateIv);
         saveParams = getView().findViewById(R.id.saveParamsTv);
+        deleteAccount = getView().findViewById(R.id.deleteAccountTv);
 
-        configureUserSettings();
+        updateUserSettings();
         updateUserParams();
+        deleteUserParams();
 
     }
 
 
-    private void configureUserSettings(){
+    private void updateUserSettings(){
 
         if (this.getCurrentUser() != null){
 
@@ -84,7 +113,6 @@ public class SettingsFragment extends Fragment {
         saveParams.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getContext(), "I just clicked my textview!", Toast.LENGTH_LONG).show();
 
                 String username = name.getText().toString();
                 String emailUser = email.getText().toString();
@@ -102,8 +130,52 @@ public class SettingsFragment extends Fragment {
 
     }
 
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+    private void deleteUserParams(){
+
+        deleteAccount.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                UserHelper.deleteUser(getCurrentUser().getUid()).addOnSuccessListener(
+                        new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void updateTask) {
+                                Log.e("SETTINGS_ACTIVITY", "deleteAccount: DONE");
+                                Toast.makeText(getContext(), "delete ok", Toast.LENGTH_SHORT).show();
+                            }
+                        });;
+
+                redirectAfterSignOut();
+            }
+        });
+
+    }
+
+
+    private void redirectAfterSignOut(){
+        /*Intent in = new Intent(this, AuthActivity.class);
+        startActivity(in);
+        finish();*/
+        startActivityForResult(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setTheme(R.style.LoginTheme)
+                        .setAvailableProviders(
+                                Arrays.asList(
+                                        new AuthUI.IdpConfig.FacebookBuilder().build(), //GOOGLE
+                                        new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.EmailBuilder().build())) //EMAIL)) // FACEBOOK)) // SUPPORT GOOGLE))
+                        .setIsSmartLockEnabled(false, true)
+                        .setLogo(R.drawable.logo_g4l)
+                        .build(),
+                RC_SIGN_IN);
+        Log.i("AuthActivity", "email Auth");
+    }
+
+
+
+
+
 
 
 }

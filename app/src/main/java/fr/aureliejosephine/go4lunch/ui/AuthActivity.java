@@ -30,8 +30,12 @@ public class AuthActivity extends AppCompatActivity{
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkIfUserIsLogged();
-        emailAuth();
+
+        if (!this.isCurrentUserLogged()){
+            this.emailAuth();
+        }else {
+            launchMainActivity();
+        }
 
     }
 
@@ -120,13 +124,9 @@ public class AuthActivity extends AppCompatActivity{
     // --------------------
 
 
-    private void checkIfUserIsLogged(){
-
-        if(getCurrentUser() != null){
-            Intent in = new Intent(this, MainActivity.class);
-            startActivity(in);
-            finish();
-        }
+    private void launchMainActivity(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
 
@@ -137,6 +137,8 @@ public class AuthActivity extends AppCompatActivity{
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+
+    protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
 
 
 

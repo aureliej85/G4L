@@ -37,7 +37,7 @@ public class UserHelper {
     }
 
     public static Task<QuerySnapshot> getAllUsers(){
-        return UserHelper.getUsersCollection().orderBy("username").get();
+        return UserHelper.getUsersCollection().get();
     }
 
     // --- UPDATE ---

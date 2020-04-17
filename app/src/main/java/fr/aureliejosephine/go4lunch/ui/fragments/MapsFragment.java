@@ -54,13 +54,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-    private PlacesClient placesClient;
-    private List<AutocompletePrediction> predictionList;
 
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
 
-    private final float DEFAULT_ZOOM= 18;
+    private final float DEFAULT_ZOOM= 16;
 
     int PERMISSION_ID = 44;
 
@@ -71,21 +69,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_maps,
-                container, false);
+        View view = inflater.inflate(R.layout.fragment_maps, container, false);
+        SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.mapFragment);
 
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager()
-                .findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
 
         // get current location of the device
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
-        Places.initialize(getContext(), getString(R.string.google_maps_key));
-        placesClient = Places.createClient(getContext());
-
-        AutocompleteSessionToken token = AutocompleteSessionToken.newInstance();
 
         return view;
     }
