@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -29,7 +31,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -40,6 +45,7 @@ import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
 
 import java.util.List;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -47,6 +53,13 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
+import fr.aureliejosephine.go4lunch.network.PlaceApi;
+import fr.aureliejosephine.go4lunch.network.PlaceService;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -58,9 +71,14 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
 
+    private Marker m;
+
+    private double latitude;
+    private double longitude;
+
     private final float DEFAULT_ZOOM= 16;
 
-    int PERMISSION_ID = 44;
+    private int PERMISSION_ID = 44;
 
     private View mapView;
 
@@ -75,10 +93,24 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
 
+        CheckGooglePlayServices();
         // get current location of the device
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
 
         return view;
+    }
+
+    private boolean CheckGooglePlayServices() {
+        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
+        int result = googleAPI.isGooglePlayServicesAvailable(getContext());
+        if(result != ConnectionResult.SUCCESS) {
+            if(googleAPI.isUserResolvableError(result)) {
+                googleAPI.getErrorDialog(getActivity(), result,
+                        0).show();
+            }
+            return false;
+        }
+        return true;
     }
 
 
@@ -170,10 +202,12 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         SettingsClient settingsClient = LocationServices.getSettingsClient(getContext());
         Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
 
-        task.addOnSuccessListener(getActivity(), new OnSuccessListener<LocationSettingsResponse>() {
+        task.addOnSuccessListener(Objects.requireNonNull(getActivity()), new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
+
+
             }
         });
 
@@ -191,14 +225,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
         });
 
-
-        // Add a marker in Sydney and move the camera
-        /*LatLng sydney = new LatLng(48.8534, 2.3488);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Here I am"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 18)); */
-
     }
+
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
@@ -218,7 +246,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             if(isLocationEnabled()){
 
                 mFusedLocationProviderClient.getLastLocation()
-                        .addOnCompleteListener(getActivity(), new OnCompleteListener<Location>() {
+                        .addOnCompleteListener(Objects.requireNonNull(getActivity()), new OnCompleteListener<Location>() {
                             @Override
                             public void onComplete(@NonNull Task<Location> task) {
 
@@ -241,6 +269,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
                                                 return;
                                             }
                                             mLastKnownLocation = locationResult.getLastLocation();
+                                            latitude = mLastKnownLocation.getLatitude();
+                                            longitude = mLastKnownLocation.getLongitude();
                                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                                             mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
                                         }
@@ -262,6 +292,59 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             requestPermissions();
         }
 
+    }
+
+
+    // ADD RESTAURANTS MARKERS AND INFOS
+    private void build_retrofit_and_get_response() {
+        Log.i("MapsFragment", "build_retrofit_and_get_response()");
+        PlaceApi service = PlaceService.cteateService(PlaceApi.class);
+        Log.i("MapsFragment", "PLace Api service");
+        Call<NearByApiResponse> call = service.getRestaurants(latitude + "," + longitude);
+        Log.i("MapsFragment", "call");
+        call.enqueue(new Callback<NearByApiResponse>() {
+            @Override
+            public void onResponse(Call<NearByApiResponse> call, Response<NearByApiResponse> response) {
+                try {
+                    mMap.clear();
+                    // This loop will go through all the results and add marker on each location.
+
+
+                    if (response.body() != null) {
+                        for (int i = 0; i < response.body().getResults().size(); i++) {
+                            Log.i("MapsFragment", "onResponse: for loop");
+                            double lat = response.body().getResults().get(i).getGeometry().getLocation().getLatitude();
+                            double lng = response.body().getResults().get(i).getGeometry().getLocation().getLongitude();
+                            String placeName = response.body().getResults().get(i).getName();
+                            String vicinity = response.body().getResults().get(i).getVicinity();
+                            MarkerOptions markerOptions = new MarkerOptions();
+                            LatLng latLng = new LatLng(lat, lng);
+                            // Position of Marker on Map
+                            markerOptions.position(latLng);
+                            // Adding Title to the Marker
+                            markerOptions.title(placeName + " : " + vicinity);
+                            // Adding Marker to the Camera.
+                            m = mMap.addMarker(markerOptions);
+                            // Adding colour to the marker
+                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                            // move map camera
+                            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+                            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+                        }
+                    }
+
+                } catch (Exception e) {
+                    Log.d("onResponse", "There is an error");
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<NearByApiResponse> call, Throwable t) {
+                Log.d("onFailure", t.toString());
+            }
+
+        });
     }
 
 }

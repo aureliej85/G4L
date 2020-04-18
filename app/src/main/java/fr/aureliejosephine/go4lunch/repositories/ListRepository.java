@@ -2,6 +2,7 @@ package fr.aureliejosephine.go4lunch.repositories;
 
 import androidx.lifecycle.MutableLiveData;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
+import fr.aureliejosephine.go4lunch.models.places.Result;
 import fr.aureliejosephine.go4lunch.network.PlaceApi;
 import fr.aureliejosephine.go4lunch.network.PlaceService;
 import retrofit2.Call;
@@ -27,9 +28,9 @@ public class ListRepository {
     }
 
 
-    public MutableLiveData<NearByApiResponse> getRestaurants(String location, String key){
+    public MutableLiveData<NearByApiResponse> getRestaurants(String location){
         MutableLiveData<NearByApiResponse> restaurantsData = new MutableLiveData<>();
-        placeApi.getRestaurants(location, key).enqueue(new Callback<NearByApiResponse>() {
+        placeApi.getRestaurants(location).enqueue(new Callback<NearByApiResponse>() {
             @Override
             public void onResponse(Call<NearByApiResponse> call,
                                    Response<NearByApiResponse> response) {
@@ -37,6 +38,7 @@ public class ListRepository {
                     restaurantsData.setValue(response.body());
                 }
             }
+
 
             @Override
             public void onFailure(Call<NearByApiResponse> call, Throwable t) {

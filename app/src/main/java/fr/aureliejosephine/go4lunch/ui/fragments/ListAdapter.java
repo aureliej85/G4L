@@ -11,6 +11,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,11 +24,15 @@ import fr.aureliejosephine.go4lunch.models.places.Result;
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder>{
 
     Context context;
-    ArrayList<Restaurant> restaurants;
+    List<Result> restaurants;
 
-    public ListAdapter(@NonNull Context context, ArrayList<Restaurant> restaurants) {
+    public ListAdapter(@NonNull Context context, ArrayList<Result> restaurants) {
         this.context = context;
         this.restaurants = restaurants;
+    }
+
+    public ListAdapter(List<Result> results) {
+        this.restaurants = results;
     }
 
 
@@ -41,11 +46,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     @Override
     public void onBindViewHolder(@NonNull ListAdapter.ListViewHolder holder, int position) {
 
-        holder.titleTv.setText(restaurants.get(position).getName());
-        holder.addrTv.setText(restaurants.get(position).getAddress());
+        holder.titleTv.setText(restaurants.get(position).getVicinity());
+        holder.addrTv.setText(restaurants.get(position).getVicinity());
 
         Glide.with(holder.picIv.getContext())
-                .load(restaurants.get(position).getUrlPhoto())
+                .load(restaurants.get(position).getPhotos())
                 .apply(RequestOptions.centerCropTransform())
                 .into(holder.picIv);
     }

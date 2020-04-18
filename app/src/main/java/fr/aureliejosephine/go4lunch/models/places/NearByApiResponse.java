@@ -10,13 +10,27 @@ public class NearByApiResponse {
 
     @SerializedName("html_attributions")
     @Expose
-    private List<Object> htmlAttributions = null;
+    private List<Object> htmlAttributions = new ArrayList<Object>();
+    @SerializedName("next_page_token")
+    @Expose
+    private String nextPageToken;
     @SerializedName("results")
     @Expose
-    private List<Result> results = null;
+    private List<Result> results = new ArrayList<Result>();
     @SerializedName("status")
     @Expose
     private String status;
+
+    public NearByApiResponse(){
+
+    }
+
+    public NearByApiResponse(List<Object> htmlAttributions,String nextPageToken, List<Result> results, String status) {
+        this.htmlAttributions = htmlAttributions;
+        this.nextPageToken = nextPageToken;
+        this.results = results;
+        this.status = status;
+    }
 
     /**
      *
@@ -72,5 +86,13 @@ public class NearByApiResponse {
      */
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getNextPageToken() {
+        return nextPageToken;
+    }
+
+    public void setNextPageToken(String nextPageToken) {
+        this.nextPageToken = nextPageToken;
     }
 }

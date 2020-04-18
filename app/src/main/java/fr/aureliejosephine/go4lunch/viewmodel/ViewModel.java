@@ -1,13 +1,14 @@
 package fr.aureliejosephine.go4lunch.viewmodel;
 
 import fr.aureliejosephine.go4lunch.models.User;
+import fr.aureliejosephine.go4lunch.repositories.ListRepository;
 import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 
 public class ViewModel extends androidx.lifecycle.ViewModel {
 
     private final UserRepository userRepository;
 
-    public ViewModel(UserRepository userRepository) {
+    public ViewModel(UserRepository userRepository, ListRepository listRepository) {
         this.userRepository = userRepository;
     }
 

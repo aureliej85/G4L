@@ -17,6 +17,13 @@ public class DetailApiResponse {
     @Expose
     private String status;
 
+
+    public DetailApiResponse(List<Object> htmlAttributions, Result result, String status) {
+        this.htmlAttributions = htmlAttributions;
+        this.result = result;
+        this.status = status;
+    }
+
     public List<Object> getHtmlAttributions() {
         return htmlAttributions;
     }
