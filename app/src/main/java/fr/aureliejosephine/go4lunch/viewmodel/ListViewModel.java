@@ -1,5 +1,9 @@
 package fr.aureliejosephine.go4lunch.viewmodel;
 
+import android.app.Application;
+
+import androidx.annotation.NonNull;
+import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -7,30 +11,24 @@ import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.Result;
 import fr.aureliejosephine.go4lunch.repositories.ListRepository;
 
-public class ListViewModel extends ViewModel {
+public class ListViewModel extends AndroidViewModel {
 
-    private MutableLiveData<NearByApiResponse> mutableLiveData;
     private ListRepository listRepository;
+    private LiveData<NearByApiResponse> nearbyResponseLiveData;
 
-    /*public ListViewModel(ListRepository listRepository) {
-        this.listRepository = listRepository;
-    }*/
 
-    public void init(){
+    public ListViewModel(@NonNull Application application) {
+        super(application);
 
-        if (mutableLiveData != null){
-            return;
-        }
-        listRepository = ListRepository.getInstance();
-        mutableLiveData = listRepository.getRestaurants("48.851932,2.377802");
-
+      listRepository = new ListRepository();
+      this.nearbyResponseLiveData = listRepository.getRestaurants("48.851932,2.377802");
     }
 
-    public LiveData<NearByApiResponse> getRestaurantsRepository() {
-        return mutableLiveData;
+
+
+    public LiveData<NearByApiResponse> getNearbyResponseLiveData() {
+        return nearbyResponseLiveData;
     }
 
-    public LiveData<NearByApiResponse> getRestaurants(String location){
-        return listRepository.getRestaurants(location);
-    }
+
 }

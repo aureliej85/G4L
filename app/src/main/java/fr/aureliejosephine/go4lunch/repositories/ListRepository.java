@@ -1,5 +1,8 @@
 package fr.aureliejosephine.go4lunch.repositories;
 
+import android.util.Log;
+
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.Result;
@@ -11,42 +14,36 @@ import retrofit2.Response;
 
 public class ListRepository {
 
-    private static ListRepository listRepository;
+    private static final String TAG = ListRepository.class.getSimpleName();
     private PlaceApi placeApi;
-    MutableLiveData<NearByApiResponse> restaurantsData;
-
-
-    public static ListRepository getInstance(){
-        if(listRepository == null){
-            listRepository = new ListRepository();
-        }
-        return listRepository;
-    }
-
 
     public ListRepository(){
-        placeApi = PlaceService.cteateService(PlaceApi.class);
+        placeApi = PlaceService.getRetrofitInstance().create(PlaceApi.class);
     }
 
-
-    public MutableLiveData<NearByApiResponse> getRestaurants(String location){
-        restaurantsData = new MutableLiveData<>();
+    public LiveData<NearByApiResponse> getRestaurants(String location){
+        final MutableLiveData<NearByApiResponse> data = new MutableLiveData<>();
         placeApi.getRestaurants(location).enqueue(new Callback<NearByApiResponse>() {
+
             @Override
-            public void onResponse(Call<NearByApiResponse> call,
-                                   Response<NearByApiResponse> response) {
-                if (response.isSuccessful()){
-                    restaurantsData.setValue(response.body());
+            public void onResponse(Call<NearByApiResponse> call, Response<NearByApiResponse> response) {
+                if (response.body() != null){
+                    data.setValue(response.body());
+
+                    Log.d(TAG, "articles total result:: " + response.body().getResults());
+                    Log.d(TAG, "articles size:: " + response.body().getResults().size());
+                    Log.d(TAG, "articles title pos 0:: " + response.body().getResults().get(0).getName());
                 }
             }
 
 
             @Override
             public void onFailure(Call<NearByApiResponse> call, Throwable t) {
-                restaurantsData.setValue(null);
+                data.setValue(null);
+                Log.i(TAG, "onFailure: " + t.toString());
             }
         });
-        return restaurantsData;
+        return data;
     }
 }
 

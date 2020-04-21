@@ -11,24 +11,21 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
-import fr.aureliejosephine.go4lunch.models.Restaurant;
-import fr.aureliejosephine.go4lunch.models.places.DetailApiResponse;
-import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.Result;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder>{
 
-    //Context context;
-    List<Result> restaurants = new ArrayList<>();
+    private Context context;
+    ArrayList<Result> restaurantsList;
 
 
-    public ListAdapter(List<Result> results) {
-        this.restaurants = results;
+    public ListAdapter(Context context, ArrayList<Result> restaurantsList) {
+        this.context = context;
+        this.restaurantsList = restaurantsList;
     }
 
     @NonNull
@@ -41,11 +38,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     @Override
     public void onBindViewHolder(@NonNull ListAdapter.ListViewHolder holder, int position) {
 
-        holder.titleTv.setText(restaurants.get(position).getName());
-        holder.addrTv.setText(restaurants.get(position).getVicinity());
+        holder.titleTv.setText(restaurantsList.get(position).getName());
+        holder.addrTv.setText(restaurantsList.get(position).getVicinity());
 
         Glide.with(holder.picIv.getContext())
-                .load(restaurants.get(position).getPhotos())
+                .load(restaurantsList.get(position).getPhotos())
                 .apply(RequestOptions.centerCropTransform())
                 .into(holder.picIv);
     }
@@ -53,7 +50,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     @Override
     public int getItemCount() {
-        return restaurants.size();
+        return restaurantsList.size();
     }
 
 

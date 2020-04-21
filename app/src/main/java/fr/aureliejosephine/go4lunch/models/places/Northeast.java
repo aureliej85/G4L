@@ -27,4 +27,5 @@ public class Northeast {
     public void setLng(Double lng) {
         this.lng = lng;
     }
+
 }

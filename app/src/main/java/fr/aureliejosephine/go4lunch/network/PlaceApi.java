@@ -15,9 +15,5 @@ public interface PlaceApi {
     @GET("nearbysearch/json?type=restaurant&radius=1500&key=" + API_KEY)
     Call<NearByApiResponse> getRestaurants(@Query("location") String location);
 
-    @GET("details/json?fields=vicinity,name,place_id,id,geometry,opening_hours,international_phone_number,website,photo")
-    Call<DetailApiResponse> getRestaurantDetail(@Query("key") String key);
-
-
 
 }

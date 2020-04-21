@@ -14,20 +14,10 @@ public class Geometry {
     @Expose
     private Viewport viewport;
 
-    /**
-     *
-     * @return
-     * The location
-     */
     public Location getLocation() {
         return location;
     }
 
-    /**
-     *
-     * @param location
-     * The location
-     */
     public void setLocation(Location location) {
         this.location = location;
     }
@@ -39,4 +29,5 @@ public class Geometry {
     public void setViewport(Viewport viewport) {
         this.viewport = viewport;
     }
+
 }

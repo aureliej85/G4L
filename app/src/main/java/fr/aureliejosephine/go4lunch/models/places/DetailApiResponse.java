@@ -10,19 +10,12 @@ public class DetailApiResponse {
     @SerializedName("html_attributions")
     @Expose
     private List<Object> htmlAttributions = null;
-    @SerializedName("result")
+    @SerializedName("results")
     @Expose
-    private Result result;
-    @SerializedName("Status")
+    private List<Result> results = null;
+    @SerializedName("status")
     @Expose
     private String status;
-
-
-    public DetailApiResponse(List<Object> htmlAttributions, Result result, String status) {
-        this.htmlAttributions = htmlAttributions;
-        this.result = result;
-        this.status = status;
-    }
 
     public List<Object> getHtmlAttributions() {
         return htmlAttributions;
@@ -32,12 +25,12 @@ public class DetailApiResponse {
         this.htmlAttributions = htmlAttributions;
     }
 
-    public Result getResult() {
-        return result;
+    public List<Result> getResults() {
+        return results;
     }
 
-    public void setResult(Result result) {
-        this.result = result;
+    public void setResults(List<Result> results) {
+        this.results = results;
     }
 
     public String getStatus() {
@@ -47,4 +40,5 @@ public class DetailApiResponse {
     public void setStatus(String status) {
         this.status = status;
     }
+
 }
