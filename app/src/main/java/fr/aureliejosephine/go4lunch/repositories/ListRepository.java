@@ -13,10 +13,11 @@ public class ListRepository {
 
     private static ListRepository listRepository;
     private PlaceApi placeApi;
+    MutableLiveData<NearByApiResponse> restaurantsData;
 
 
     public static ListRepository getInstance(){
-        if( listRepository == null){
+        if(listRepository == null){
             listRepository = new ListRepository();
         }
         return listRepository;
@@ -29,7 +30,7 @@ public class ListRepository {
 
 
     public MutableLiveData<NearByApiResponse> getRestaurants(String location){
-        MutableLiveData<NearByApiResponse> restaurantsData = new MutableLiveData<>();
+        restaurantsData = new MutableLiveData<>();
         placeApi.getRestaurants(location).enqueue(new Callback<NearByApiResponse>() {
             @Override
             public void onResponse(Call<NearByApiResponse> call,

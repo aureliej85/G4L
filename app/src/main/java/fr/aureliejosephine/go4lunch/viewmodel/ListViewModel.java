@@ -12,9 +12,9 @@ public class ListViewModel extends ViewModel {
     private MutableLiveData<NearByApiResponse> mutableLiveData;
     private ListRepository listRepository;
 
-    public ListViewModel(ListRepository listRepository) {
+    /*public ListViewModel(ListRepository listRepository) {
         this.listRepository = listRepository;
-    }
+    }*/
 
     public void init(){
 
@@ -22,7 +22,7 @@ public class ListViewModel extends ViewModel {
             return;
         }
         listRepository = ListRepository.getInstance();
-        mutableLiveData = listRepository.getRestaurants("-33.870775, 151.199025");
+        mutableLiveData = listRepository.getRestaurants("48.851932,2.377802");
 
     }
 

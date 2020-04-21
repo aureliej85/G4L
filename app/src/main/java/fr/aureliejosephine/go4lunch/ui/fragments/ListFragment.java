@@ -5,8 +5,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -17,21 +19,21 @@ import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
-import fr.aureliejosephine.go4lunch.injections.Injection;
-import fr.aureliejosephine.go4lunch.injections.ViewModelFactory;
-import fr.aureliejosephine.go4lunch.models.Restaurant;
+
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.Result;
+
 import fr.aureliejosephine.go4lunch.viewmodel.ListViewModel;
 
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment  {
 
-    ArrayList<NearByApiResponse> restaurantsList = new ArrayList<>();
-    List<NearByApiResponse> restaurants = new ArrayList<>();
+    List<Result> restaurantsList;
+
     ListAdapter listAdapter;
     RecyclerView recyclerView;
     ListViewModel listViewModel;
     NearByApiResponse nearByApiResponse;
+
 
     public ListFragment(){
 
@@ -44,22 +46,21 @@ public class ListFragment extends Fragment {
 
         recyclerView = rootsView.findViewById(R.id.recycler_list);
 
-        ViewModelFactory viewModelFactory = Injection.provideViewModelFactory();
-        listViewModel = ViewModelProviders.of(this, viewModelFactory).get(ListViewModel.class);
+        final LinearLayoutManager layoutManager = new LinearLayoutManager(this.getActivity());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
+
+        listViewModel = ViewModelProviders.of(getActivity()).get(ListViewModel.class);
         listViewModel.init();
-        /*listViewModel.getRestaurantsRepository().observe(this, newsResponse -> {
-            List<Result> restaurants = (List<Result>) listViewModel.getRestaurants("-33.870775, 151.199025", "AIzaSyASuNr6QZGHbqEtY1GEfoKlVdkaEMz1PBM");
+
+        listViewModel.getRestaurantsRepository().observe(this, restaurantsResponse -> {
+            List<Result> restaurants = restaurantsResponse.getResults();
             restaurantsList.addAll(restaurants);
             listAdapter.notifyDataSetChanged();
-        });*/
-
-        /*restaurants = (List<NearByApiResponse>) listViewModel.getRestaurants("-33.870775, 151.199025");
-        restaurantsList.addAll(restaurants);*/
-
-        //listAdapter.notifyDataSetChanged();
-        nearByApiResponse = new NearByApiResponse();
+        });
 
         setupRecyclerView();
+
 
         Log.i("ListFragment", "onCreateView: ");
         return rootsView;
@@ -69,7 +70,7 @@ public class ListFragment extends Fragment {
 
     private void setupRecyclerView() {
         if (listAdapter == null) {
-            listAdapter = new ListAdapter(nearByApiResponse.getResults());
+            listAdapter = new ListAdapter(restaurantsList);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             recyclerView.setAdapter(listAdapter);
             recyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -79,6 +80,8 @@ public class ListFragment extends Fragment {
         }
         Log.i("ListFragment", "setUpRecyclerView ");
     }
+
+
 
 
 }

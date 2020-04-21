@@ -23,30 +23,25 @@ import fr.aureliejosephine.go4lunch.models.places.Result;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder>{
 
-    Context context;
-    List<Result> restaurants;
+    //Context context;
+    List<Result> restaurants = new ArrayList<>();
 
-    public ListAdapter(@NonNull Context context, ArrayList<Result> restaurants) {
-        this.context = context;
-        this.restaurants = restaurants;
-    }
 
     public ListAdapter(List<Result> results) {
         this.restaurants = results;
     }
 
-
     @NonNull
     @Override
     public ListAdapter.ListViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(context).inflate(R.layout.item_list, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_list, parent, false);
         return new ListViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ListAdapter.ListViewHolder holder, int position) {
 
-        holder.titleTv.setText(restaurants.get(position).getVicinity());
+        holder.titleTv.setText(restaurants.get(position).getName());
         holder.addrTv.setText(restaurants.get(position).getVicinity());
 
         Glide.with(holder.picIv.getContext())

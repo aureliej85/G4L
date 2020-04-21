@@ -296,7 +296,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
 
     // ADD RESTAURANTS MARKERS AND INFOS
-    private void build_retrofit_and_get_response() {
+   /* private void build_retrofit_and_get_response() {
         Log.i("MapsFragment", "build_retrofit_and_get_response()");
         PlaceApi service = PlaceService.cteateService(PlaceApi.class);
         Log.i("MapsFragment", "PLace Api service");
@@ -345,6 +345,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
             }
 
         });
-    }
+    }*/
 
 }

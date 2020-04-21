@@ -21,6 +21,7 @@ public class NearByApiResponse {
     @Expose
     private String status;
 
+
     public NearByApiResponse(){
 
     }
