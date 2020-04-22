@@ -1,4 +1,4 @@
-package fr.aureliejosephine.go4lunch.ui;
+package fr.aureliejosephine.go4lunch.ui.activities;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;

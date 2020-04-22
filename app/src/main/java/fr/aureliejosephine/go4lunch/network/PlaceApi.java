@@ -1,5 +1,6 @@
 package fr.aureliejosephine.go4lunch.network;
 
+import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.places.DetailApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import retrofit2.Call;

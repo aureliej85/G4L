@@ -22,17 +22,6 @@ public class NearByApiResponse {
     private String status;
 
 
-    public NearByApiResponse(){
-
-    }
-
-    public NearByApiResponse(List<Object> htmlAttributions,String nextPageToken, List<Result> results, String status) {
-        this.htmlAttributions = htmlAttributions;
-        this.nextPageToken = nextPageToken;
-        this.results = results;
-        this.status = status;
-    }
-
     /**
      *
      * @return

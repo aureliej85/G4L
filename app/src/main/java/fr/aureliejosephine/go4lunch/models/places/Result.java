@@ -22,9 +22,9 @@ public class Result {
     @SerializedName("name")
     @Expose
     private String name;
-    @SerializedName("opening_hours")
+    /*@SerializedName("opening_hours")
     @Expose
-    private OpeningHours openingHours;
+    public OpeningHours openingHours;*/
     @SerializedName("photos")
     @Expose
     private List<Photo> photos = null;
@@ -55,6 +55,10 @@ public class Result {
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
+
+
+
+    private String imageUrl;
 
     public Geometry getGeometry() {
         return geometry;
@@ -88,13 +92,13 @@ public class Result {
         this.name = name;
     }
 
-    public OpeningHours getOpeningHours() {
+   /* public OpeningHours getOpeningHours() {
         return openingHours;
     }
 
     public void setOpeningHours(OpeningHours openingHours) {
         this.openingHours = openingHours;
-    }
+    }*/
 
     public List<Photo> getPhotos() {
         return photos;

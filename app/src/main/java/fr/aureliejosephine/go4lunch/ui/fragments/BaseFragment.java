@@ -1,4 +1,4 @@
-package fr.aureliejosephine.go4lunch.ui;
+package fr.aureliejosephine.go4lunch.ui.fragments;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

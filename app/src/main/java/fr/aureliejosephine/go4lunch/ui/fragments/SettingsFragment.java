@@ -22,7 +22,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.api.UserHelper;
-import fr.aureliejosephine.go4lunch.ui.BaseFragment;
 
 public class SettingsFragment extends BaseFragment {
 

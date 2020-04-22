@@ -13,14 +13,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
-import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
 
-import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.Result;
 
+import fr.aureliejosephine.go4lunch.ui.adapters.ListAdapter;
 import fr.aureliejosephine.go4lunch.viewmodel.ListViewModel;
 
 public class ListFragment extends Fragment  {
