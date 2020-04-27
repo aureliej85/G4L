@@ -5,12 +5,7 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import fr.aureliejosephine.go4lunch.models.Restaurant;
-import fr.aureliejosephine.go4lunch.models.places.DetailApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
-import fr.aureliejosephine.go4lunch.models.places.Result;
 import fr.aureliejosephine.go4lunch.repositories.ListRepository;
 
 public class ListViewModel extends AndroidViewModel {

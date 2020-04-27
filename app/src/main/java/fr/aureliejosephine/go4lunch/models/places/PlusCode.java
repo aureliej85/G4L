@@ -5,28 +5,27 @@ import com.google.gson.annotations.SerializedName;
 
 public class PlusCode {
 
-        @SerializedName("compound_code")
-        @Expose
-        private String compoundCode;
-        @SerializedName("global_code")
-        @Expose
-        private String globalCode;
+    @SerializedName("compound_code")
+    @Expose
+    private String compoundCode;
+    @SerializedName("global_code")
+    @Expose
+    private String globalCode;
 
-        public String getCompoundCode() {
-            return compoundCode;
-        }
+    public String getCompoundCode() {
+        return compoundCode;
+    }
 
-        public void setCompoundCode(String compoundCode) {
-            this.compoundCode = compoundCode;
-        }
+    public void setCompoundCode(String compoundCode) {
+        this.compoundCode = compoundCode;
+    }
 
-        public String getGlobalCode() {
-            return globalCode;
-        }
+    public String getGlobalCode() {
+        return globalCode;
+    }
 
-        public void setGlobalCode(String globalCode) {
-            this.globalCode = globalCode;
-        }
-
+    public void setGlobalCode(String globalCode) {
+        this.globalCode = globalCode;
+    }
 
 }

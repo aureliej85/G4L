@@ -1,5 +1,8 @@
 package fr.aureliejosephine.go4lunch.models.places;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import com.google.android.libraries.places.api.model.AddressComponent;
 import com.google.android.libraries.places.api.model.OpeningHours;
 import com.google.gson.annotations.Expose;
@@ -8,7 +11,9 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Result {
+import fr.aureliejosephine.go4lunch.models.User;
+
+public class Result implements Parcelable{
 
     @SerializedName("geometry")
     @Expose
@@ -22,9 +27,9 @@ public class Result {
     @SerializedName("name")
     @Expose
     private String name;
-    /*@SerializedName("opening_hours")
-    @Expose
-    public OpeningHours openingHours;*/
+    //@SerializedName("opening_hours")
+    //@Expose
+    //private OpeningHours openingHours;
     @SerializedName("photos")
     @Expose
     private List<Photo> photos = null;
@@ -55,10 +60,6 @@ public class Result {
     @SerializedName("price_level")
     @Expose
     private Integer priceLevel;
-
-
-
-    private String imageUrl;
 
     public Geometry getGeometry() {
         return geometry;
@@ -179,5 +180,82 @@ public class Result {
     public void setPriceLevel(Integer priceLevel) {
         this.priceLevel = priceLevel;
     }
+
+
+    protected Result(Parcel in) {
+        icon = in.readString();
+        id = in.readString();
+        name = in.readString();
+        placeId = in.readString();
+        if (in.readByte() == 0) {
+            rating = null;
+        } else {
+            rating = in.readDouble();
+        }
+        reference = in.readString();
+        scope = in.readString();
+        types = in.createStringArrayList();
+        if (in.readByte() == 0) {
+            userRatingsTotal = null;
+        } else {
+            userRatingsTotal = in.readInt();
+        }
+        vicinity = in.readString();
+        if (in.readByte() == 0) {
+            priceLevel = null;
+        } else {
+            priceLevel = in.readInt();
+        }
+
+    }
+
+    public static final Creator<Result> CREATOR = new Creator<Result>() {
+        @Override
+        public Result createFromParcel(Parcel in) {
+            return new Result(in);
+        }
+
+        @Override
+        public Result[] newArray(int size) {
+            return new Result[size];
+        }
+    };
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeString(icon);
+        parcel.writeString(id);
+        parcel.writeString(name);
+        parcel.writeString(placeId);
+        if (rating == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeDouble(rating);
+        }
+        parcel.writeString(reference);
+        parcel.writeString(scope);
+        parcel.writeStringList(types);
+        if (userRatingsTotal == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(userRatingsTotal);
+        }
+        parcel.writeString(vicinity);
+        if (priceLevel == null) {
+            parcel.writeByte((byte) 0);
+        } else {
+            parcel.writeByte((byte) 1);
+            parcel.writeInt(priceLevel);
+        }
+    }
+
 
 }

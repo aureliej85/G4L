@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
 
+import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.models.places.Result;
 
 import fr.aureliejosephine.go4lunch.ui.adapters.ListAdapter;
@@ -27,7 +28,7 @@ public class ListFragment extends Fragment  {
     private RecyclerView recyclerView;
     private LinearLayoutManager layoutManager;
     private ListAdapter adapter;
-    private ArrayList<Result> restaurantsList = new ArrayList<>();
+    private ArrayList<DetailsResult> restaurantsList = new ArrayList<>();
     ListViewModel listViewModel;
 
 
@@ -88,7 +89,7 @@ public class ListFragment extends Fragment  {
         listViewModel.getNearbyResponseLiveData().observe(this, restaurantsResponse -> {
             if (restaurantsResponse != null) {
 
-                List<Result> restaurants = restaurantsResponse.getResults();
+                List<DetailsResult> restaurants = restaurantsResponse.getResults();
                 restaurantsList.addAll(restaurants);
                 adapter.notifyDataSetChanged();
             }

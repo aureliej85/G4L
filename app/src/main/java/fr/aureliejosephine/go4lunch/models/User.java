@@ -16,11 +16,25 @@ public class User {
 
     public User() { }
 
-    public User(String uid, String username, String urlPicture, String uEmail) {
+    public User(String uid, String username,String uEmail) {
         this.uid = uid;
         this.username = username;
-        this.picture = urlPicture;
         this.email = uEmail;
+    }
+
+    public User(String uid, String username, String picture, String uEmail) {
+        this.uid = uid;
+        this.username = username;
+        this.picture = picture;
+        this.email = uEmail;
+    }
+
+    public User(String uid, String username, String picture, String uEmail, String restaurantName) {
+        this.uid = uid;
+        this.username = username;
+        this.picture = picture;
+        this.email = uEmail;
+        this.restaurantName = restaurantName;
     }
 
     // --- GETTERS ---

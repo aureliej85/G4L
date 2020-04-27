@@ -4,10 +4,7 @@ import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import fr.aureliejosephine.go4lunch.models.Restaurant;
-import fr.aureliejosephine.go4lunch.models.places.DetailApiResponse;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
-import fr.aureliejosephine.go4lunch.models.places.Result;
 import fr.aureliejosephine.go4lunch.network.PlaceApi;
 import fr.aureliejosephine.go4lunch.network.PlaceService;
 import retrofit2.Call;

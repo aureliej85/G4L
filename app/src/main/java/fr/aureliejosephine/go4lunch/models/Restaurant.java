@@ -18,7 +18,16 @@ public class Restaurant {
     private int rating;
     private String phoneNumber;
     private String webSite;
-    private List<User> usersEatingHere;
+    private List<User> workmatesHere;
+
+    public Restaurant(){
+    }
+
+    public Restaurant(String id, String name, List<User> workmatesHere){
+        this.uid = id;
+        this.name = name;
+        this.workmatesHere = workmatesHere;
+    }
 
     public Restaurant(String uid, String name, Double latitude, Double longitude, @Nullable String address, @Nullable int openingHours, @Nullable String urlPhoto, @Nullable int rating, String phoneNumber, String webSite) {
         this.uid = uid;
@@ -31,7 +40,7 @@ public class Restaurant {
         this.rating = rating;
         this.phoneNumber = phoneNumber;
         this.webSite = webSite;
-        usersEatingHere = new ArrayList<>();
+        workmatesHere = new ArrayList<>();
     }
 
     public String getUid() {
@@ -99,12 +108,12 @@ public class Restaurant {
     }
 
     public void setUserGoingEating(List<User> users){
-        usersEatingHere = users;
+        workmatesHere = users;
 
     }
 
     public List<User> getUsersEatingHere(){
-        return usersEatingHere;
+        return workmatesHere;
     }
 
     public int getRating() {

@@ -14,12 +14,7 @@ public class OpeningHours {
 
     @SerializedName("open_now")
     @Expose
-    public Boolean openNow;
-    @Expose
-    public List<Period> periods = null;
-    @SerializedName("weekday_text")
-    @Expose
-    public List<String> weekdayText = null;
+    private Boolean openNow;
 
     public Boolean getOpenNow() {
         return openNow;
@@ -27,22 +22,6 @@ public class OpeningHours {
 
     public void setOpenNow(Boolean openNow) {
         this.openNow = openNow;
-    }
-
-    public List<Period> getPeriods() {
-        return periods;
-    }
-
-    public void setPeriods(List<Period> periods) {
-        this.periods = periods;
-    }
-
-    public List<String> getWeekdayText() {
-        return weekdayText;
-    }
-
-    public void setWeekdayText(List<String> weekdayText) {
-        this.weekdayText = weekdayText;
     }
 
 }

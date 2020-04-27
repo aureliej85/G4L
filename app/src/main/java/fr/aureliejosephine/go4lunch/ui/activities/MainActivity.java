@@ -10,6 +10,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.api.UserHelper;
+import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.ui.fragments.ListFragment;
 import fr.aureliejosephine.go4lunch.ui.fragments.MapsFragment;
@@ -40,13 +41,17 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -55,13 +60,17 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
 
-
     private DrawerLayout drawer;
     private Toolbar toolbar;
     private NavigationView sideNav;
     private GoogleMap map;
     private FirebaseFirestore firebaseFirestore;
     private UserRepository userRepository;
+
+    private User user;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
 
     //FOR DATA
     private static final int RC_SIGN_IN = 123;
@@ -290,14 +299,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .into(uPicIv);
             }
 
-            //Get email & username from Firebase
-            String email = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-            String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(R.string.info_no_username_found) : this.getCurrentUser().getDisplayName();
 
+            // Realtime Name and email update : snapShotListener
+            userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
 
-            //Update views with data
-            uNameTv.setText(username);
-            uEmailTv.setText(email);
+                    if (e != null) {
+                        Log.w("MainActivity", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        //Log.d(TAG, "Current data: " + snapshot.getData());
+                        user = documentSnapshot.toObject(User.class);
+
+                        String uName = user.getUsername();
+                        String uEmail = user.getEmail();
+
+                        uNameTv.setText(uName);
+                        uEmailTv.setText(uEmail);
+                    } else {
+                        Log.d("MainActivity", "Current data: null");
+                    }
+                }
+            });
+
         }
     }
 
@@ -337,7 +364,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String uid = this.getCurrentUser().getUid();
             String uEmail = this.getCurrentUser().getEmail();
 
-            UserHelper.createUser(uid, username, urlPicture, uEmail).addOnFailureListener(new OnFailureListener() {
+            UserHelper.createUser(uid, username, urlPicture, uEmail, null).addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception e) {
                     Toast.makeText(getApplicationContext(), "wayaye", Toast.LENGTH_LONG).show();

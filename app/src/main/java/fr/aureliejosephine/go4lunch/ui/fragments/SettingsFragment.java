@@ -13,8 +13,14 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.util.Arrays;
 
@@ -22,6 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.api.UserHelper;
+import fr.aureliejosephine.go4lunch.models.User;
 
 public class SettingsFragment extends BaseFragment {
 
@@ -32,6 +39,10 @@ public class SettingsFragment extends BaseFragment {
     @Nullable
     private ImageView workmatePic;
     private static final int RC_SIGN_IN = 123;
+    private User user;
+
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
 
 
 
@@ -76,11 +87,9 @@ public class SettingsFragment extends BaseFragment {
         email = getView().findViewById(R.id.emailEt);
         workmatePic = getView().findViewById(R.id.workmateIv);
         saveParams = getView().findViewById(R.id.saveParamsTv);
-        deleteAccount = getView().findViewById(R.id.deleteAccountTv);
 
         updateUserSettings();
         updateUserParams();
-        deleteUserParams();
 
     }
 
@@ -97,13 +106,52 @@ public class SettingsFragment extends BaseFragment {
                         .into(workmatePic);
             }
 
-            //Get email & username from Firebase
-            String uEmail = TextUtils.isEmpty(this.getCurrentUser().getEmail()) ? getString(R.string.info_no_email_found) : this.getCurrentUser().getEmail();
-            String username = TextUtils.isEmpty(this.getCurrentUser().getDisplayName()) ? getString(R.string.info_no_username_found) : this.getCurrentUser().getDisplayName();
+            //Get email & username from Firestore
+            /*userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    user = documentSnapshot.toObject(User.class);
 
-            //Update views with data
-            name.setText(username);
-            email.setText(uEmail);
+                    String uName = user.getUsername();
+                    String uEmail = user.getEmail();
+
+                    name.setText(uName);
+                    email.setText(uEmail);
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Log.i("SettingsFragment", "onFailure: " + e.toString());
+                }
+            });*/
+
+            userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                @Override
+                public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+
+                    if (e != null) {
+                        Log.w("SettingsFragment", "Listen failed.", e);
+                        return;
+                    }
+
+                    if (documentSnapshot != null && documentSnapshot.exists()) {
+                        //Log.d(TAG, "Current data: " + snapshot.getData());
+                        user = documentSnapshot.toObject(User.class);
+
+                        String uName = user.getUsername();
+                        String uEmail = user.getEmail();
+
+                        name.setText(uName);
+                        email.setText(uEmail);
+                    } else {
+                        Log.d("SettingsFragment", "Current data: null");
+                    }
+
+
+                }
+            });
+
+
         }
     }
 
@@ -129,26 +177,7 @@ public class SettingsFragment extends BaseFragment {
 
     }
 
-    private void deleteUserParams(){
 
-        deleteAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                UserHelper.deleteUser(getCurrentUser().getUid()).addOnSuccessListener(
-                        new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void updateTask) {
-                                Log.e("SETTINGS_ACTIVITY", "deleteAccount: DONE");
-                                Toast.makeText(getContext(), "delete ok", Toast.LENGTH_SHORT).show();
-                            }
-                        });;
-
-                redirectAfterSignOut();
-            }
-        });
-
-    }
 
 
     private void redirectAfterSignOut(){
