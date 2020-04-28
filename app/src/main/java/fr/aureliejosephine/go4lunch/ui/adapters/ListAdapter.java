@@ -128,15 +128,16 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 String restaurantName = result.getName();
                 String uid = result.getId();
 
-
-                RestaurantHelper.createRestaurants(uid, restaurantName, urlPicture, null).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Toast.makeText(context, "wayaye", Toast.LENGTH_LONG).show();
-                    }
-                });
-
+                if(result.getId() == null){
+                    RestaurantHelper.createRestaurants(uid, restaurantName, urlPicture, null).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Toast.makeText(context, "wayaye", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
         }
+
 
         @Nullable
         protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }

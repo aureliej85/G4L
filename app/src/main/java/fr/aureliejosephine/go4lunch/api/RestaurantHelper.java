@@ -44,19 +44,11 @@ public class RestaurantHelper {
 
     // --- UPDATE ---
 
-    public static Task<Void> updateRestaurant(String name) {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setName(name);
-        return UserHelper.getUsersCollection().document(name).update("name", name);
+    public static Task<Void> updateRestaurant(String id, List<User> userList) {
+        //Restaurant restaurant = new Restaurant();
+        //restaurant.setName(name);
+        return RestaurantHelper.getRestaurantsCollection().document(id).update("usersEatingHere", userList);
     }
-
-    public static Task<Void> updateWmRestaurant(String name, List<User> wm) {
-        Restaurant restaurant = new Restaurant();
-        restaurant.setUserGoingEating(wm);
-        return RestaurantHelper.getRestaurantsCollection().document(name).update("workmatesHere", wm);
-    }
-
-
 
 
 
