@@ -9,8 +9,9 @@
     <ImageView
         android:id="@+id/picDetailsIv"
         android:layout_width="411dp"
-        android:layout_height="259dp"
+        android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
@@ -19,12 +20,12 @@
         android:id="@+id/fabDetails"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="236dp"
-        android:layout_marginEnd="48dp"
+        android:layout_marginEnd="50dp"
         android:clickable="true"
         app:backgroundTint="@android:color/white"
+        app:layout_constraintBottom_toTopOf="@+id/constraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/picDetailsIv"
         app:srcCompat="@drawable/ic_add_circle_black_24dp" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -70,6 +71,7 @@
             app:layout_constraintStart_toEndOf="@+id/titleDetailTv"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_star_black_24dp" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -144,6 +146,7 @@
             android:textSize="12sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/websiteDetailIv" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.recyclerview.widget.RecyclerView

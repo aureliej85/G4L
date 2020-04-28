@@ -7,13 +7,22 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 import java.util.ArrayList;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.api.RestaurantHelper;
+import fr.aureliejosephine.go4lunch.api.UserHelper;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
@@ -25,8 +34,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     ArrayList<DetailsResult> restaurantsList;
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
-    public static final int MAX_WIDTH = 75;
-    public static final int MAX_HEIGHT = 75;
+    public static final int MAX_WIDTH = 300;
+    public static final int MAX_HEIGHT = 300;
 
     String key = "AIzaSyASuNr6QZGHbqEtY1GEfoKlVdkaEMz1PBM";
 
@@ -93,11 +102,15 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             this.titleTv.setText(result.getName());
             this.addrTv.setText(result.getVicinity());
 
+            String url = BASE_URL+"?maxwidth="+MAX_WIDTH+"&maxheight="+MAX_HEIGHT+"&photoreference="+result.getPhotos().get(0).getPhotoReference()+"&key="+key ;
+
+
+            createRestaurantInFirestore(result, url);
 
             // Display Photos
             if (!(result.getPhotos() == null)){
                 if (!(result.getPhotos().isEmpty())){
-                    glide.load(BASE_URL+"?maxwidth="+MAX_WIDTH+"&maxheight="+MAX_HEIGHT+"&photoreference="+result.getPhotos().get(0).getPhotoReference()+"&key="+key)
+                    glide.load(url)
                             .apply(RequestOptions.centerCropTransform())
                             .into(picIv);
                 }
@@ -107,5 +120,25 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
         }
+
+
+        private void createRestaurantInFirestore(DetailsResult result, String url){
+
+                String urlPicture = url;
+                String restaurantName = result.getName();
+                String uid = result.getId();
+
+
+                RestaurantHelper.createRestaurants(uid, restaurantName, urlPicture, null).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(context, "wayaye", Toast.LENGTH_LONG).show();
+                    }
+                });
+
+        }
+
+        @Nullable
+        protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
     }
 }

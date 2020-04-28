@@ -10,6 +10,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.request.RequestOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -43,12 +44,17 @@ public class DetailsActivity extends AppCompatActivity {
     private ImageView websiteIv;
     private ImageView phoneIv;
 
+    public static final int MAX_WIDTH = 75;
+    public static final int MAX_HEIGHT = 75;
+
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
     private String key = "AIzaSyASuNr6QZGHbqEtY1GEfoKlVdkaEMz1PBM";
     private String url;
+    private DetailsResult result;
     private User user;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+    //private DocumentReference restaurantRef;
 
     private List<User> listWm = new ArrayList<>();
 
@@ -77,10 +83,9 @@ public class DetailsActivity extends AppCompatActivity {
                 Intent intent = getIntent();
                 DetailsResult result = intent.getParcelableExtra("result");
 
-
-                userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+                userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
-                    public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
                         user = documentSnapshot.toObject(User.class);
 
                         if(documentSnapshot.getData().get("restaurantName").equals(result.getName())){
@@ -94,15 +99,17 @@ public class DetailsActivity extends AppCompatActivity {
                             chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
 
                         }
-
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.i("DetailsActivity", "onFailure: " + e.toString());
                     }
                 });
 
-
-
-
             }
         });
+
 
         phoneIv.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,10 +136,23 @@ public class DetailsActivity extends AppCompatActivity {
         titleDetails.setText(result.getName());
         addressDetails.setText(result.getVicinity());
 
-        url="https://www.lesfruitsetlegumesfrais.com/_upload/cache/ressources/produits/tomate/tomate_-_copie_346_346_filled.jpg";
-        Glide.with(this).load(url)
-                        .apply(RequestOptions.centerCropTransform())
+        db.collection("restaurants").document(result.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                String picUrl = documentSnapshot.getData().get("urlPhoto").toString();
+
+                Glide.with(getApplication()).load(picUrl)
                         .into(picDetails);
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("DetailsActivity", "onFailure: " + e.toString());
+
+            }
+        });
+
+
 
     }
 
@@ -140,20 +160,31 @@ public class DetailsActivity extends AppCompatActivity {
         Intent intent = getIntent();
         DetailsResult result = intent.getParcelableExtra("result");
 
-        userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                user = documentSnapshot.toObject(User.class);
+
                 if(documentSnapshot.getData().get("restaurantName").equals(result.getName())){
                     chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
+
                 }
             }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("DetailsActivity", "onFailure: " + e.toString());
+            }
         });
+
+
 
     }
 
 
     @Nullable
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
+
 
     @Override
     protected void onStart() {

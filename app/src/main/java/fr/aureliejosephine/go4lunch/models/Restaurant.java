@@ -23,9 +23,10 @@ public class Restaurant {
     public Restaurant(){
     }
 
-    public Restaurant(String id, String name, List<User> workmatesHere){
+    public Restaurant(String id, String name, String urlPhoto, List<User> workmatesHere){
         this.uid = id;
         this.name = name;
+        this.urlPhoto = urlPhoto;
         this.workmatesHere = workmatesHere;
     }
 

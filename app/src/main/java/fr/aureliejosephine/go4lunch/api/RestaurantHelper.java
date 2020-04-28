@@ -24,9 +24,9 @@ public class RestaurantHelper {
 
     // --- CREATE ---
 
-    public static Task<Void> createRestaurants(String id, String name, List<User> workmatesHere) {
+    public static Task<Void> createRestaurants(String id, String name, String urlPhoto, List<User> workmatesHere) {
         // 1 - Create Obj
-        Restaurant restaurantToCreate = new Restaurant(id, name, workmatesHere);
+        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, workmatesHere);
 
         return RestaurantHelper.getRestaurantsCollection().document(id).set(restaurantToCreate);
     }
