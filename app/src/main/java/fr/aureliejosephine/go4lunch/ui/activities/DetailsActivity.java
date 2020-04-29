@@ -33,29 +33,16 @@ import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.viewmodel.UserViewModel;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends BaseActivity {
 
     private ImageView picDetails;
     private TextView titleDetails;
     private TextView addressDetails;
     private ImageView chosenRestaurantFab;
-    private ImageView websiteIv;
-    private ImageView phoneIv;
-
-    private UserViewModel userViewModel;
-
-    private FirebaseFirestore firebaseFirestore;
-    private RecyclerView recyclerView;
-    private FirestoreRecyclerAdapter adapter;
-
-    public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
-    private String key = "AIzaSyASuNr6QZGHbqEtY1GEfoKlVdkaEMz1PBM";
     private User user;
+    private UserViewModel userViewModel;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
-
-
-    private List<User> listWm = new ArrayList<>();
 
 
     @Override
@@ -68,20 +55,12 @@ public class DetailsActivity extends AppCompatActivity {
         titleDetails = findViewById(R.id.titleDetailTv);
         addressDetails = findViewById(R.id.adresseDetailsTv);
         chosenRestaurantFab = findViewById(R.id.fabDetails);
-        websiteIv = findViewById(R.id.websiteDetailIv);
-        phoneIv = findViewById(R.id.phoneDetailIv);
         chosenRestaurantFab = findViewById(R.id.fabDetails);
-        recyclerView = findViewById(R.id.recycler_wm_details);
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
         configUI();
-
         greenCheck();
-
-        // Config recyclerview with firestore
-        /*firebaseFirestore = FirebaseFirestore.getInstance();
-        ConfigFirestoreRecyclerAdapter();*/
 
         chosenRestaurantFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,26 +68,20 @@ public class DetailsActivity extends AppCompatActivity {
                 Intent intent = getIntent();
                 DetailsResult result = intent.getParcelableExtra("result");
 
-                // PICK THIS RESTAURANT
                 userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         user = documentSnapshot.toObject(User.class);
 
-
                             if((documentSnapshot.getData().get("restaurantName")) != null && (documentSnapshot.getData().get("restaurantName").equals(result.getName()))){
                                 Toast.makeText(DetailsActivity.this, "Vous avez déjà sélectionné ce restaurant", Toast.LENGTH_SHORT).show();
 
                             } else {
-                                //UserRepository.updateRestaurantChosen(getCurrentUser().getUid(), result.getName());
+
                                 userViewModel.UpdateRestaurantChosen(getCurrentUser().getUid(), result.getName());
                                 Toast.makeText(DetailsActivity.this, "Resto bien selectionné", Toast.LENGTH_SHORT).show();
-                                System.out.println("nom resto dans User= " + user.getRestaurantName() + "nom resto dans result " + result.getName());
-
                                 chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
-
                             }
-
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -116,92 +89,10 @@ public class DetailsActivity extends AppCompatActivity {
                         Log.i("DetailsActivity", "onFailure: " + e.toString());
                     }
                 });
-
-
-                // ADD ME IN THIS RESTAURANT IN FIRESTORE
-                db.collection("restaurants").document(result.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        User newUser = new User(user.getUid(), user.getUsername(), user.getEmail());
-                        listWm.add(newUser);
-                        RestaurantRepository.updateRestaurant(result.getId(), listWm);
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("DetailsActivity", "onFailure: " + e.toString());
-
-                    }
-                });
-
-
             }
         });
 
     }
-
-   /* public void ConfigFirestoreRecyclerAdapter(){
-        Log.i("deyailsActivity", "ConfigFirestoreRecyclerAdapter: ");
-        Query query = firebaseFirestore.collection("restaurants");
-        FirestoreRecyclerOptions<Restaurant> options = new FirestoreRecyclerOptions.Builder<Restaurant>()
-                .setQuery(query, Restaurant.class)
-                .build();
-
-        adapter = new FirestoreRecyclerAdapter<Restaurant, DetailsActivity.RestaurantsViewHolder>(options) {
-            @NonNull
-            @Override
-            public DetailsActivity.RestaurantsViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_wm_details, parent, false);
-                return new DetailsActivity.RestaurantsViewHolder(view);
-            }
-
-            @Override
-            protected void onBindViewHolder(@NonNull DetailsActivity.RestaurantsViewHolder holder, int position, @NonNull Restaurant model) {
-
-                db.collection("restaurants").document(model.getUid()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                    @Override
-                    public void onSuccess(DocumentSnapshot documentSnapshot) {
-                        Log.i("deTailsActivity", "onSuccess: ");
-
-
-
-
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.i("DetailsActivity", "onFailure: " + e.toString());
-
-                    }
-                });
-
-
-
-
-            }
-        };
-
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(adapter);
-        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),
-                DividerItemDecoration.VERTICAL));
-    }
-
-
-    private class RestaurantsViewHolder extends RecyclerView.ViewHolder {
-
-        private ImageView userPic;
-        private TextView descrTv;
-
-        public RestaurantsViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            userPic = itemView.findViewById(R.id.wmPicDetail);
-            descrTv = itemView.findViewById(R.id.wmJoiningTv);
-        }
-    } */
 
 
     public void configUI() {
@@ -243,7 +134,6 @@ public class DetailsActivity extends AppCompatActivity {
                         chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
                     }
                 }
-
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -251,27 +141,9 @@ public class DetailsActivity extends AppCompatActivity {
                 Log.i("DetailsActivity", "onFailure: " + e.toString());
             }
         });
-
-
-
     }
 
 
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        //adapter.startListening();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        //adapter.stopListening();
-    }
 }
 
 

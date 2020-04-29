@@ -50,7 +50,7 @@ public class UserRepository {
     }
 
 
-    public  Task<QuerySnapshot> getAllUsers(){
+    public Task<QuerySnapshot> getAllUsers(){
         return userCollection.get();
     }
 

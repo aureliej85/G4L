@@ -16,11 +16,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import fr.aureliejosephine.go4lunch.R;
 
 
-public class AuthActivity extends AppCompatActivity{
+public class AuthActivity extends BaseActivity {
 
 
-    //FOR DATA
     private static final int RC_SIGN_IN = 123;
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,11 +34,6 @@ public class AuthActivity extends AppCompatActivity{
 
     }
 
-
-
-    // --------------------
-    // ACTIONS
-    // --------------------
 
     public void emailAuth() {
         startActivityForResult(
@@ -58,17 +53,12 @@ public class AuthActivity extends AppCompatActivity{
     }
 
 
-
-
-
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         this.handleResponseAfterSignIn(requestCode, resultCode, data);
     }
-
 
 
     private void handleResponseAfterSignIn(int requestCode, int resultCode, Intent data){
@@ -80,61 +70,27 @@ public class AuthActivity extends AppCompatActivity{
             Log.i("AuthActivity", "onActivityResult: RC sign in");
 
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
-                //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                // ...
+
                 Log.i("AuthActivity", "onActivityResult: result OK");
                 Intent in = new Intent(this, MainActivity.class);
                 startActivity(in);
                 finish();
+
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
+
                 if (response == null) {
                     Log.e("Login","Login canceled by User");
                     return;
                 }
-                /*if (response.getError() == ErrorCodes.NO_NETWORK) {
-                    Log.e("Login","No Internet Connection");
-                    return;
-                }
-                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Log.e("Login","Unknown Error");
-                    return;
-                }*/
             }
         }
     }
-
-
-
-
-
-
-
-    // --------------------
-    // NAVIGATION
-    // --------------------
 
 
     private void launchMainActivity(){
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
-
-
-
-    // --------------------
-    // UTILS
-    // --------------------
-
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
-
-    protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
-
 
 
 }

@@ -22,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.User;
+import fr.aureliejosephine.go4lunch.ui.adapters.WorkmatesAdapter;
 
 public class WorkmatesFragment extends Fragment {
 
@@ -50,30 +51,7 @@ public class WorkmatesFragment extends Fragment {
                     .setQuery(query, User.class)
                     .build();
 
-            adapter = new FirestoreRecyclerAdapter<User, UsersViewHolder>(options) {
-                @NonNull
-                @Override
-                public UsersViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                    View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_workmates, parent, false);
-                    return new UsersViewHolder(view);
-                }
-
-                @Override
-                protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull User model) {
-
-                    if(model.getRestaurantName() == null){
-                        holder.descrTv.setText(model.getUsername() + " n'a pas encore choisie");
-                    } else {
-                        holder.descrTv.setText(model.getUsername() + " mangera au " + model.getRestaurantName());
-                    }
-
-
-                    Glide.with(holder.userPic.getContext())
-                            .load(model.getPicture())
-                            .apply(RequestOptions.circleCropTransform())
-                            .into(holder.userPic);
-                }
-            };
+            adapter = new WorkmatesAdapter(options);
 
             recyclerView.setHasFixedSize(true);
             recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -82,19 +60,6 @@ public class WorkmatesFragment extends Fragment {
                     DividerItemDecoration.VERTICAL));
         }
 
-
-    private class UsersViewHolder extends RecyclerView.ViewHolder {
-
-        private ImageView userPic;
-        private TextView descrTv;
-
-        public UsersViewHolder(@NonNull View itemView) {
-            super(itemView);
-
-            userPic = itemView.findViewById(R.id.workmatesItemIv);
-            descrTv = itemView.findViewById(R.id.descrTv);
-        }
-    }
 
     @Override
     public void onStart() {
@@ -107,6 +72,7 @@ public class WorkmatesFragment extends Fragment {
         super.onStop();
         adapter.stopListening();
     }
+
 }
 
 

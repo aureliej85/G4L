@@ -57,7 +57,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener{
 
 
     private DrawerLayout drawer;
@@ -65,16 +65,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private NavigationView sideNav;
     private GoogleMap map;
     private FirebaseFirestore firebaseFirestore;
-
     private User user;
-
     private UserViewModel userViewModel;
-
+    private static final int RC_SIGN_IN = 123;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
 
-    //FOR DATA
-    private static final int RC_SIGN_IN = 123;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -228,9 +225,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void redirectAfterSignOut(){
-        /*Intent in = new Intent(this, AuthActivity.class);
-        startActivity(in);
-        finish();*/
+
         startActivityForResult(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
@@ -257,30 +252,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Log.i("AuthActivity", "onActivityResult: RC sign in");
 
             if (resultCode == RESULT_OK) {
-                // Successfully signed in
-                //FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                // ...
                 Log.i("AuthActivity", "onActivityResult: result OK");
                 Intent in = new Intent(this, MainActivity.class);
                 startActivity(in);
                 finish();
             } else {
-                // Sign in failed. If response is null the user canceled the
-                // sign-in flow using the back button. Otherwise check
-                // response.getError().getErrorCode() and handle the error.
-                // ...
                 if (response == null) {
                     Log.e("Login","Login canceled by User");
                     return;
                 }
-                /*if (response.getError() == ErrorCodes.NO_NETWORK) {
-                    Log.e("Login","No Internet Connection");
-                    return;
-                }
-                if (response.getErrorCode() == ErrorCodes.UNKNOWN_ERROR) {
-                    Log.e("Login","Unknown Error");
-                    return;
-                }*/
             }
         }
     }
@@ -349,13 +329,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.getResult().exists()){
-                                System.out.println("Déja dans la BDD");
+                                System.out.println("User already in Firestore");
                         } else {
                             createUserInFirestore();
                         }
                     }
                 });
     }
+
 
     private void createUserInFirestore(){
 
@@ -368,17 +349,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             userViewModel.CreateUser(uid, username, urlPicture, uEmail, null);
 
-            /*UserRepository.createUser(uid, username, urlPicture, uEmail, null).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Toast.makeText(getApplicationContext(), "wayaye", Toast.LENGTH_LONG).show();
-                }
-            });*/
         }
     }
 
 
-
-    @Nullable
-    protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 }

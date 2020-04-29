@@ -20,7 +20,9 @@ public class UserViewModel extends AndroidViewModel {
         userRepository = new UserRepository();
     }
 
-    // Create user in firestore
+
+    // -- CREATE USER IN FIRESTORE --
+
      public void CreateUser(String uid, String username, String urlPicture, String uEmail, String restaurantName){
         userRepository.createUser(uid, username, urlPicture, uEmail, restaurantName).addOnFailureListener(new OnFailureListener() {
              @Override
@@ -31,7 +33,8 @@ public class UserViewModel extends AndroidViewModel {
      }
 
 
-     // Update user in firestore
+     // -- UPDATE USER IN FIRESTORE --
+
     public void UpdateUser(String username, String uEmail,  String uid){
         userRepository.updateUsernameAndEmail(username, uEmail, uid).addOnSuccessListener(
                 new OnSuccessListener<Void>() {
@@ -44,7 +47,8 @@ public class UserViewModel extends AndroidViewModel {
     }
 
 
-    // Update restaurant chosen by the user
+    // -- UPDATE RESTAURANT CHOSEN BY THE USER IN FIRESTORE --
+
     public void UpdateRestaurantChosen(String uid, String restaurantName){
         userRepository.updateRestaurantChosen(uid, restaurantName).addOnFailureListener(new OnFailureListener() {
             @Override

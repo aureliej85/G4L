@@ -35,48 +35,18 @@ public class SettingsFragment extends BaseFragment {
     private TextInputEditText name;
     private TextInputEditText email;
     private TextView saveParams;
-    private TextView deleteAccount;
     @Nullable
     private ImageView workmatePic;
-    private static final int RC_SIGN_IN = 123;
     private User user;
     private UserViewModel userViewModel;
-
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
-
-
-
-
-        //FOR DATA
-        // 2 - Identify each Http Request
-        private static final int SIGN_OUT_TASK = 10;
-        private static final int DELETE_USER_TASK = 20;
-
-
-            // --------------------
-            // ACTIONS
-            // --------------------
-
-
-
-        // --------------------
-        // UI
-        // --------------------
-
-
-
-        // 3 - Create OnCompleteListener called after tasks ended
-
-
 
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container, false);
-
-
         return view;
     }
 
@@ -101,32 +71,12 @@ public class SettingsFragment extends BaseFragment {
 
         if (this.getCurrentUser() != null){
 
-            //Get picture URL from Firebase
             if (this.getCurrentUser().getPhotoUrl() != null) {
                 Glide.with(this)
                         .load(this.getCurrentUser().getPhotoUrl())
                         .apply(RequestOptions.circleCropTransform())
                         .into(workmatePic);
             }
-
-            //Get email & username from Firestore
-            /*userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    user = documentSnapshot.toObject(User.class);
-
-                    String uName = user.getUsername();
-                    String uEmail = user.getEmail();
-
-                    name.setText(uName);
-                    email.setText(uEmail);
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    Log.i("SettingsFragment", "onFailure: " + e.toString());
-                }
-            });*/
 
             userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
@@ -138,7 +88,7 @@ public class SettingsFragment extends BaseFragment {
                     }
 
                     if (documentSnapshot != null && documentSnapshot.exists()) {
-                        //Log.d(TAG, "Current data: " + snapshot.getData());
+
                         user = documentSnapshot.toObject(User.class);
 
                         String uName = user.getUsername();
@@ -146,20 +96,16 @@ public class SettingsFragment extends BaseFragment {
 
                         name.setText(uName);
                         email.setText(uEmail);
+
                     } else {
                         Log.d("SettingsFragment", "Current data: null");
                     }
-
-
                 }
             });
-
-
         }
     }
 
     private void updateUserParams(){
-
         saveParams.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -168,46 +114,8 @@ public class SettingsFragment extends BaseFragment {
                 String emailUser = email.getText().toString();
 
                 userViewModel.UpdateUser(username, emailUser, getCurrentUser().getUid());
-                /*UserRepository.updateUsernameAndEmail(username,emailUser, getCurrentUser().getUid()).addOnSuccessListener(
-                        new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void updateTask) {
-                                Log.e("SETTINGS_ACTIVITY", "saveSettings: DONE");
-                                Toast.makeText(getContext(), "update ok", Toast.LENGTH_SHORT).show();
-                            }
-                        });;*/
             }
         });
-
     }
-
-
-
-
-    private void redirectAfterSignOut(){
-        /*Intent in = new Intent(this, AuthActivity.class);
-        startActivity(in);
-        finish();*/
-        startActivityForResult(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setTheme(R.style.LoginTheme)
-                        .setAvailableProviders(
-                                Arrays.asList(
-                                        new AuthUI.IdpConfig.FacebookBuilder().build(), //GOOGLE
-                                        new AuthUI.IdpConfig.GoogleBuilder().build(),
-                                        new AuthUI.IdpConfig.EmailBuilder().build())) //EMAIL)) // FACEBOOK)) // SUPPORT GOOGLE))
-                        .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.drawable.logo_g4l)
-                        .build(),
-                RC_SIGN_IN);
-        Log.i("AuthActivity", "email Auth");
-    }
-
-
-
-
-
-
 
 }
