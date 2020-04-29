@@ -1,31 +1,22 @@
 package fr.aureliejosephine.go4lunch.ui.activities;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
-import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
-import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,17 +24,14 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.DividerItemDecoration;
-import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
-import fr.aureliejosephine.go4lunch.api.RestaurantHelper;
-import fr.aureliejosephine.go4lunch.api.UserHelper;
-import fr.aureliejosephine.go4lunch.models.Restaurant;
+import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
+import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
-import fr.aureliejosephine.go4lunch.models.places.Result;
-import fr.aureliejosephine.go4lunch.ui.fragments.WorkmatesFragment;
+import fr.aureliejosephine.go4lunch.viewmodel.UserViewModel;
 
 public class DetailsActivity extends AppCompatActivity {
 
@@ -53,6 +41,8 @@ public class DetailsActivity extends AppCompatActivity {
     private ImageView chosenRestaurantFab;
     private ImageView websiteIv;
     private ImageView phoneIv;
+
+    private UserViewModel userViewModel;
 
     private FirebaseFirestore firebaseFirestore;
     private RecyclerView recyclerView;
@@ -83,13 +73,15 @@ public class DetailsActivity extends AppCompatActivity {
         chosenRestaurantFab = findViewById(R.id.fabDetails);
         recyclerView = findViewById(R.id.recycler_wm_details);
 
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+
         configUI();
 
         greenCheck();
 
         // Config recyclerview with firestore
-        firebaseFirestore = FirebaseFirestore.getInstance();
-        ConfigFirestoreRecyclerAdapter();
+        /*firebaseFirestore = FirebaseFirestore.getInstance();
+        ConfigFirestoreRecyclerAdapter();*/
 
         chosenRestaurantFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,17 +95,20 @@ public class DetailsActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         user = documentSnapshot.toObject(User.class);
 
-                        if(documentSnapshot.getData().get("restaurantName").equals(result.getName())){
-                            Toast.makeText(DetailsActivity.this, "Vous avez déjà sélectionné ce restaurant", Toast.LENGTH_SHORT).show();
 
-                        } else {
-                            UserHelper.updateRestaurantChosen(getCurrentUser().getUid(), result.getName());
-                            Toast.makeText(DetailsActivity.this, "Resto bien selectionné", Toast.LENGTH_SHORT).show();
-                            System.out.println("nom resto dans User= " + user.getRestaurantName() + "nom resto dans result " + result.getName());
+                            if((documentSnapshot.getData().get("restaurantName")) != null && (documentSnapshot.getData().get("restaurantName").equals(result.getName()))){
+                                Toast.makeText(DetailsActivity.this, "Vous avez déjà sélectionné ce restaurant", Toast.LENGTH_SHORT).show();
 
-                            chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
+                            } else {
+                                //UserRepository.updateRestaurantChosen(getCurrentUser().getUid(), result.getName());
+                                userViewModel.UpdateRestaurantChosen(getCurrentUser().getUid(), result.getName());
+                                Toast.makeText(DetailsActivity.this, "Resto bien selectionné", Toast.LENGTH_SHORT).show();
+                                System.out.println("nom resto dans User= " + user.getRestaurantName() + "nom resto dans result " + result.getName());
 
-                        }
+                                chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
+
+                            }
+
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                     @Override
@@ -129,7 +124,7 @@ public class DetailsActivity extends AppCompatActivity {
                     public void onSuccess(DocumentSnapshot documentSnapshot) {
                         User newUser = new User(user.getUid(), user.getUsername(), user.getEmail());
                         listWm.add(newUser);
-                        RestaurantHelper.updateRestaurant(result.getId(), listWm);
+                        RestaurantRepository.updateRestaurant(result.getId(), listWm);
 
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -146,7 +141,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    public void ConfigFirestoreRecyclerAdapter(){
+   /* public void ConfigFirestoreRecyclerAdapter(){
         Log.i("deyailsActivity", "ConfigFirestoreRecyclerAdapter: ");
         Query query = firebaseFirestore.collection("restaurants");
         FirestoreRecyclerOptions<Restaurant> options = new FirestoreRecyclerOptions.Builder<Restaurant>()
@@ -206,7 +201,7 @@ public class DetailsActivity extends AppCompatActivity {
             userPic = itemView.findViewById(R.id.wmPicDetail);
             descrTv = itemView.findViewById(R.id.wmJoiningTv);
         }
-    }
+    } */
 
 
     public void configUI() {
@@ -243,10 +238,12 @@ public class DetailsActivity extends AppCompatActivity {
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 user = documentSnapshot.toObject(User.class);
 
-                if(documentSnapshot.getData().get("restaurantName").equals(result.getName())){
-                    chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
-
+                if(documentSnapshot.getData().get("restaurantName") != null){
+                    if(documentSnapshot.getData().get("restaurantName").equals(result.getName())){
+                        chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
+                    }
                 }
+
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
@@ -267,13 +264,13 @@ public class DetailsActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        adapter.startListening();
+        //adapter.startListening();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        adapter.stopListening();
+        //adapter.stopListening();
     }
 }
 

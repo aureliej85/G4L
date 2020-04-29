@@ -1,7 +1,6 @@
 package fr.aureliejosephine.go4lunch.viewmodel;
 
 import android.app.Application;
-
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -16,7 +15,6 @@ public class ListViewModel extends AndroidViewModel {
 
     public ListViewModel(@NonNull Application application) {
         super(application);
-
       listRepository = new ListRepository();
       this.nearbyResponseLiveData = listRepository.getRestaurants("48.851932,2.377802");
     }

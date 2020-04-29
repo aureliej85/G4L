@@ -1,4 +1,4 @@
-package fr.aureliejosephine.go4lunch.api;
+package fr.aureliejosephine.go4lunch.repositories;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -8,11 +8,10 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
-import androidx.annotation.Nullable;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.User;
 
-public class RestaurantHelper {
+public class RestaurantRepository {
 
     private static final String COLLECTION_NAME = "restaurants";
 
@@ -22,40 +21,39 @@ public class RestaurantHelper {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    // --- CREATE ---
+    // --- CREATE RESTAURANT ---
 
-    public static Task<Void> createRestaurants(String id, String name, String urlPhoto, List<User> workmatesHere) {
-        // 1 - Create Obj
+    public static Task<Void> createRestaurant(String id, String name, String urlPhoto, List<User> workmatesHere) {
+
         Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, workmatesHere);
 
-        return RestaurantHelper.getRestaurantsCollection().document(id).set(restaurantToCreate);
+        return RestaurantRepository.getRestaurantsCollection().document(id).set(restaurantToCreate);
     }
 
-    // --- GET ---
+    // --- GET RESTAURANT ---
 
     public static Task<DocumentSnapshot> getRestaurant(String id){
-        return RestaurantHelper.getRestaurantsCollection().document(id).get();
+        return RestaurantRepository.getRestaurantsCollection().document(id).get();
     }
 
 
     public static Task<QuerySnapshot> getAllRestaurants(){
-        return RestaurantHelper.getRestaurantsCollection().get();
+        return RestaurantRepository.getRestaurantsCollection().get();
     }
 
-    // --- UPDATE ---
+    // --- UPDATE RESTAURANT ---
 
     public static Task<Void> updateRestaurant(String id, List<User> userList) {
-        //Restaurant restaurant = new Restaurant();
-        //restaurant.setName(name);
-        return RestaurantHelper.getRestaurantsCollection().document(id).update("usersEatingHere", userList);
+
+        return RestaurantRepository.getRestaurantsCollection().document(id).update("usersEatingHere", userList);
     }
 
 
 
-    // --- DELETE ---
+    // --- DELETE RESTAURANT---
 
-    public static Task<Void> deleteRestaurant(String name) {
-        return UserHelper.getUsersCollection().document(name).delete();
+    public static Task<Void> deleteRestaurant(String id) {
+        return RestaurantRepository.getRestaurantsCollection().document(id).delete();
     }
 
 }

@@ -1,7 +1,6 @@
 package fr.aureliejosephine.go4lunch.ui.fragments;
 
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.firestore.DocumentReference;
@@ -26,9 +24,11 @@ import java.util.Arrays;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProviders;
 import fr.aureliejosephine.go4lunch.R;
-import fr.aureliejosephine.go4lunch.api.UserHelper;
+import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.models.User;
+import fr.aureliejosephine.go4lunch.viewmodel.UserViewModel;
 
 public class SettingsFragment extends BaseFragment {
 
@@ -40,6 +40,7 @@ public class SettingsFragment extends BaseFragment {
     private ImageView workmatePic;
     private static final int RC_SIGN_IN = 123;
     private User user;
+    private UserViewModel userViewModel;
 
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
@@ -87,6 +88,8 @@ public class SettingsFragment extends BaseFragment {
         email = getView().findViewById(R.id.emailEt);
         workmatePic = getView().findViewById(R.id.workmateIv);
         saveParams = getView().findViewById(R.id.saveParamsTv);
+
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
         updateUserSettings();
         updateUserParams();
@@ -164,14 +167,15 @@ public class SettingsFragment extends BaseFragment {
                 String username = name.getText().toString();
                 String emailUser = email.getText().toString();
 
-                UserHelper.updateUsernameAndEmail(username,emailUser, getCurrentUser().getUid()).addOnSuccessListener(
+                userViewModel.UpdateUser(username, emailUser, getCurrentUser().getUid());
+                /*UserRepository.updateUsernameAndEmail(username,emailUser, getCurrentUser().getUid()).addOnSuccessListener(
                         new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void updateTask) {
                                 Log.e("SETTINGS_ACTIVITY", "saveSettings: DONE");
                                 Toast.makeText(getContext(), "update ok", Toast.LENGTH_SHORT).show();
                             }
-                        });;
+                        });;*/
             }
         });
 

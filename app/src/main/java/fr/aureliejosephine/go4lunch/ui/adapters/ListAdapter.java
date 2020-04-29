@@ -21,10 +21,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
-import fr.aureliejosephine.go4lunch.api.RestaurantHelper;
-import fr.aureliejosephine.go4lunch.api.UserHelper;
-import fr.aureliejosephine.go4lunch.models.Restaurant;
-import fr.aureliejosephine.go4lunch.models.User;
+import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.ui.activities.DetailsActivity;
 
@@ -129,7 +126,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 String uid = result.getId();
 
                 if(result.getId() == null){
-                    RestaurantHelper.createRestaurants(uid, restaurantName, urlPicture, null).addOnFailureListener(new OnFailureListener() {
+                    RestaurantRepository.createRestaurant(uid, restaurantName, urlPicture, null).addOnFailureListener(new OnFailureListener() {
                         @Override
                         public void onFailure(@NonNull Exception e) {
                             Toast.makeText(context, "wayaye", Toast.LENGTH_LONG).show();

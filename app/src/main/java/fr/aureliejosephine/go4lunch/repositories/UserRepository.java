@@ -6,15 +6,15 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import fr.aureliejosephine.go4lunch.api.UserHelper;
 import fr.aureliejosephine.go4lunch.models.User;
 
 
 public class UserRepository {
+    
 
-    //private CollectionReference userCollection;
     private static final String COLLECTION_NAME = "users";
-
+    private CollectionReference userCollection;
+    private User user;
     private static volatile UserRepository INSTANCE;
 
     public static UserRepository getInstance(){
@@ -24,49 +24,58 @@ public class UserRepository {
         return INSTANCE;
     }
 
+    public UserRepository(){
+        this.userCollection = getUsersCollection();
+    }
+
     // --- COLLECTION REFERENCE ---
 
-    public static CollectionReference getUsersCollection(){
+    private CollectionReference getUsersCollection(){
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    // --- CREATE ---
+    // --- CREATE USER ---
 
-    public  Task<Void> createUser(String uid, String username, String urlPicture, String uEmail) {
-        // 1 - Create Obj
-        User userToCreate = new User(uid, username, urlPicture, uEmail);
+    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String restaurantName) {
 
-        return this.getUsersCollection().document(uid).set(userToCreate);
+        User userToCreate = new User(uid, username, urlPicture, uEmail, restaurantName);
+
+        return userCollection.document(uid).set(userToCreate);
     }
 
-    // --- GET ---
+    // --- GET USER ---
 
-    public  Task<DocumentSnapshot> getUser(String uid){
-        return UserRepository.getUsersCollection().document(uid).get();
+    public Task<DocumentSnapshot> getUser(String uid){
+        return userCollection.document(uid).get();
     }
 
-    public Task<QuerySnapshot> getAllUsers(){
-        return UserRepository.getUsersCollection().orderBy("username").get();
+
+    public  Task<QuerySnapshot> getAllUsers(){
+        return userCollection.get();
     }
 
-    // --- UPDATE ---
+    // --- UPDATE USER ---
 
-    public  Task<Void> updateUsernameAndEmail(String username, String uEmail,  String uid) {
+    public Task<Void> updateUsernameAndEmail(String username, String uEmail,  String uid) {
         User user = new User();
         user.setUsername(username);
-        return UserRepository.getUsersCollection().document(uid).update("username", username, "email", uEmail);
+        return userCollection.document(uid).update("username", username, "email", uEmail);
     }
 
 
-    public  Task<Void> updatePicture(String urlPicture, String uid) {
-        return UserRepository.getUsersCollection().document(uid).update("picture", urlPicture);
+    public Task<Void> updatePicture(String urlPicture, String uid) {
+        return userCollection.document(uid).update("picture", urlPicture);
+    }
+
+    public Task<Void> updateRestaurantChosen(String uid, String restaurantName) {
+        return userCollection.document(uid).update("restaurantName", restaurantName);
     }
 
 
-    // --- DELETE ---
+    // --- DELETE USER ---
 
-    public  Task<Void> deleteUser(String uid) {
-        return UserRepository.getUsersCollection().document(uid).delete();
+    public Task<Void> deleteUser(String uid) {
+        return userCollection.document(uid).delete();
     }
 
 }
