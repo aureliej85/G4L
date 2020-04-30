@@ -19,11 +19,18 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.models.Booking;
+import fr.aureliejosephine.go4lunch.repositories.BookingRepository;
 import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.ui.activities.DetailsActivity;
+import fr.aureliejosephine.go4lunch.viewmodel.BookingViewModel;
+
+import static java.security.AccessController.getContext;
 
 public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder>{
 
@@ -34,6 +41,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     public static final int MAX_WIDTH = 300;
     public static final int MAX_HEIGHT = 300;
 
+    private BookingViewModel bookingViewModel;
     String key = "AIzaSyASuNr6QZGHbqEtY1GEfoKlVdkaEMz1PBM";
 
 
@@ -134,6 +142,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                     });
                 }
         }
+
+
 
 
         @Nullable

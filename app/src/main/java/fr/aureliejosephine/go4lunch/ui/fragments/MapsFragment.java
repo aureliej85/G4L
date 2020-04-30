@@ -63,112 +63,50 @@ import retrofit2.Retrofit;
 
 import static android.app.Activity.RESULT_OK;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback {
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
-
+    private int PERMISSION_ID = 44;
     private Marker m;
-
+    private LocationRequest locationRequest;
     private double latitude;
     private double longitude;
 
     private final float DEFAULT_ZOOM= 16;
 
-    private int PERMISSION_ID = 44;
+
 
     private View mapView;
 
 
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
-        SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.mapFragment);
 
+        SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
 
         CheckGooglePlayServices();
-        // get current location of the device
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
 
         return view;
     }
 
-    private boolean CheckGooglePlayServices() {
-        GoogleApiAvailability googleAPI = GoogleApiAvailability.getInstance();
-        int result = googleAPI.isGooglePlayServicesAvailable(getContext());
-        if(result != ConnectionResult.SUCCESS) {
-            if(googleAPI.isUserResolvableError(result)) {
-                googleAPI.getErrorDialog(getActivity(), result,
-                        0).show();
-            }
-            return false;
-        }
-        return true;
-    }
 
-
-    // -------------
-    // PERMISSIONS
-    // -------------
-
-
-    private boolean checkPermissions(){
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
-                ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            return true;
-        }
-        return false;
-    }
-
-
-    private void requestPermissions(){
-        ActivityCompat.requestPermissions(
-                getActivity(),
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
-                PERMISSION_ID
-        );
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSION_ID) {
-            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                // Granted. Start getting the location information
-            }
-        }
-    }
-
-
-
-    // -------------
-    // LOCATION
-    // -------------
-
-
-    private boolean isLocationEnabled(){
-        LocationManager locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(
-                LocationManager.NETWORK_PROVIDER
-        );
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.i("MapsActivity", "onMapReady: ");
         mMap = googleMap;
 
-        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) ==
-                PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                        PackageManager.PERMISSION_GRANTED) {
+        if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             mMap.setMyLocationEnabled(true);
             mMap.getUiSettings().setMyLocationButtonEnabled(true); // GEOLOCALISATION BUTTON
@@ -183,30 +121,21 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
         // CUSTOM GEOLOCALISATION BUTTON
         if(mapView != null && mapView.findViewById(Integer.parseInt("1")) != null ){
-            View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
-            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)locationButton.getLayoutParams();
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
-            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
-            layoutParams.setMargins(0, 0, 40, 180);
+            configGeolocationButton();
         }
 
 
         // CHECK IF GPS IS ENABLE OR NOT AND THEN REQUEST USER TO ENABLE IT
-        LocationRequest locationRequest = LocationRequest.create();
-        locationRequest.setInterval(10000);
-        locationRequest.setFastestInterval(5000);
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        isGpsEnabled();
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
 
         SettingsClient settingsClient = LocationServices.getSettingsClient(getContext());
         Task<LocationSettingsResponse> task = settingsClient.checkLocationSettings(builder.build());
-
         task.addOnSuccessListener(Objects.requireNonNull(getActivity()), new OnSuccessListener<LocationSettingsResponse>() {
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
-
 
             }
         });
@@ -239,6 +168,13 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
         }
     }
 
+    public void configGeolocationButton(){
+        View locationButton = ((View) mapView.findViewById(Integer.parseInt("1")).getParent()).findViewById(Integer.parseInt("2"));
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)locationButton.getLayoutParams();
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+        layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+        layoutParams.setMargins(0, 0, 40, 180);
+    }
 
     // FETCH CURRENT LOCATION OF THE DEVICE
     private void getDeviceLocation(){
@@ -256,10 +192,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
                                 } else {
 
-                                    LocationRequest locationRequest = LocationRequest.create();
-                                    locationRequest.setInterval(10000);
-                                    locationRequest.setFastestInterval(5000);
-                                    locationRequest.setPriority(locationRequest.PRIORITY_HIGH_ACCURACY);
+                                    isGpsEnabled();
 
                                     locationCallback = new LocationCallback() {
                                         @Override
@@ -294,57 +227,5 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
-
-    // ADD RESTAURANTS MARKERS AND INFOS
-   /* private void build_retrofit_and_get_response() {
-        Log.i("MapsFragment", "build_retrofit_and_get_response()");
-        PlaceApi service = PlaceService.cteateService(PlaceApi.class);
-        Log.i("MapsFragment", "PLace Api service");
-        Call<NearByApiResponse> call = service.getRestaurants(latitude + "," + longitude);
-        Log.i("MapsFragment", "call");
-        call.enqueue(new Callback<NearByApiResponse>() {
-            @Override
-            public void onResponse(Call<NearByApiResponse> call, Response<NearByApiResponse> response) {
-                try {
-                    mMap.clear();
-                    // This loop will go through all the results and add marker on each location.
-
-
-                    if (response.body() != null) {
-                        for (int i = 0; i < response.body().getResults().size(); i++) {
-                            Log.i("MapsFragment", "onResponse: for loop");
-                            double lat = response.body().getResults().get(i).getGeometry().getLocation().getLatitude();
-                            double lng = response.body().getResults().get(i).getGeometry().getLocation().getLongitude();
-                            String placeName = response.body().getResults().get(i).getName();
-                            String vicinity = response.body().getResults().get(i).getVicinity();
-                            MarkerOptions markerOptions = new MarkerOptions();
-                            LatLng latLng = new LatLng(lat, lng);
-                            // Position of Marker on Map
-                            markerOptions.position(latLng);
-                            // Adding Title to the Marker
-                            markerOptions.title(placeName + " : " + vicinity);
-                            // Adding Marker to the Camera.
-                            m = mMap.addMarker(markerOptions);
-                            // Adding colour to the marker
-                            markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
-                            // move map camera
-                            mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-                            mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-                        }
-                    }
-
-                } catch (Exception e) {
-                    Log.d("onResponse", "There is an error");
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<NearByApiResponse> call, Throwable t) {
-                Log.d("onFailure", t.toString());
-            }
-
-        });
-    }*/
 
 }

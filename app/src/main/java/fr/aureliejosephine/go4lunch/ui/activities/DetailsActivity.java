@@ -18,6 +18,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,6 +32,7 @@ import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
+import fr.aureliejosephine.go4lunch.viewmodel.BookingViewModel;
 import fr.aureliejosephine.go4lunch.viewmodel.UserViewModel;
 
 public class DetailsActivity extends BaseActivity {
@@ -41,6 +43,7 @@ public class DetailsActivity extends BaseActivity {
     private ImageView chosenRestaurantFab;
     private User user;
     private UserViewModel userViewModel;
+    private BookingViewModel bookingViewModel;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
 
@@ -58,6 +61,7 @@ public class DetailsActivity extends BaseActivity {
         chosenRestaurantFab = findViewById(R.id.fabDetails);
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        bookingViewModel = ViewModelProviders.of(this).get(BookingViewModel.class);
 
         configUI();
         greenCheck();
@@ -81,6 +85,7 @@ public class DetailsActivity extends BaseActivity {
                                 userViewModel.UpdateRestaurantChosen(getCurrentUser().getUid(), result.getName());
                                 Toast.makeText(DetailsActivity.this, "Resto bien selectionné", Toast.LENGTH_SHORT).show();
                                 chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
+                                createBooking();
                             }
                     }
                 }).addOnFailureListener(new OnFailureListener() {
@@ -117,6 +122,18 @@ public class DetailsActivity extends BaseActivity {
 
             }
         });
+
+    }
+
+    public void createBooking(){
+        Intent intent = getIntent();
+        DetailsResult result = intent.getParcelableExtra("result");
+
+        String bName = result.getName();
+        String bUid = getCurrentUser().getUid();
+        String bUsername = user.getUsername();
+
+        bookingViewModel.createBooking(bName, null, bUid, bUsername, null);
 
     }
 
