@@ -3,6 +3,7 @@ package fr.aureliejosephine.go4lunch.models.details_places;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import fr.aureliejosephine.go4lunch.models.places.Result;

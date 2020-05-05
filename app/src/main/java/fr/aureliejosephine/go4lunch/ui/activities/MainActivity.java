@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.ui.fragments.ListFragment;
@@ -25,6 +26,7 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -42,6 +44,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -54,6 +57,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.IOException;
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -70,6 +75,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private static final int RC_SIGN_IN = 123;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+    ArrayList<DetailsResult> restaurantsList;
+    private DetailsResult result;
 
 
 
@@ -84,6 +91,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         configureToolbar();
         configureDrawer();
         configureHeaderNavigationView();
+        createNotificationChannel();
+        subscribeTopicNotification();
 
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
 
@@ -108,7 +117,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private void configureToolbar(){
         toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        //setSupportActionBar(toolbar);
     }
 
     private void configureDrawer(){
@@ -208,7 +217,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             case R.id.nav_lunch:
                 Log.i("MainACtivity", "onNavigationItemSelected: navLunch ");
-                getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new WorkmatesFragment()).commit();
+                this.launchChosenRestaurant();
                 break;
             case R.id.nav_settings:
                 Log.i("MainACtivity", "onNavigationItemSelected: navSettings ");
@@ -240,6 +249,34 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .build(),
                 RC_SIGN_IN);
         Log.i("AuthActivity", "email Auth");
+    }
+
+    private void launchChosenRestaurant(){
+        firebaseFirestore.collection("users").document(getCurrentUser().getUid()).get()
+                .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                    @Override
+                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                        if(documentSnapshot != null){
+
+                            User wmUser = documentSnapshot.toObject(User.class);
+                            //String result = wmUser.getRestaurantName();
+
+                            if(wmUser.getRestaurantName() != null){
+                                Intent intent = new Intent(getApplication(), DetailsActivity.class);
+                                intent.putExtra("result", result);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(MainActivity.this, "Vous n'avez pas sectionné de restaurant", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.i("MainActivity", "onFailure: launchChosenRestaurant" + e.toString());
+            }
+        });
     }
 
 

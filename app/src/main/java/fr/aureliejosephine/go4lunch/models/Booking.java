@@ -6,15 +6,17 @@ public class Booking {
     private String rUrlPic;
     private String uIdr;
     private String uUsername;
+    private String uPic;
     private String rDate;
 
     public Booking(){}
 
-    public Booking(String rName, String rUrlPic, String uIdr, String uUsername, String rDate) {
+    public Booking(String rName, String rUrlPic, String uIdr, String uUsername, String uPic, String rDate) {
         this.rName = rName;
         this.rUrlPic = rUrlPic;
         this.uIdr = uIdr;
         this.uUsername = uUsername;
+        this.uPic = uPic;
         this.rDate = rDate;
     }
 
@@ -49,6 +51,14 @@ public class Booking {
 
     public void setuUsername(String uUsername) {
         this.uUsername = uUsername;
+    }
+
+    public String getuPic() {
+        return uPic;
+    }
+
+    public void setuPic(String uPic) {
+        this.uPic = uPic;
     }
 
     public String getrDate() {

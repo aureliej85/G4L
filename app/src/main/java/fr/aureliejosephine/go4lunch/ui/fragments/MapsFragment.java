@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -43,8 +45,12 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -52,10 +58,15 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.models.Restaurant;
+import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.network.PlaceApi;
 import fr.aureliejosephine.go4lunch.network.PlaceService;
+import fr.aureliejosephine.go4lunch.ui.activities.DetailsActivity;
+import fr.aureliejosephine.go4lunch.viewmodel.ListViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -63,11 +74,10 @@ import retrofit2.Retrofit;
 
 import static android.app.Activity.RESULT_OK;
 
-public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
+public class MapsFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
     private int PERMISSION_ID = 44;
@@ -75,13 +85,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     private LocationRequest locationRequest;
     private double latitude;
     private double longitude;
-
     private final float DEFAULT_ZOOM= 16;
-
-
-
     private View mapView;
-
+    private ListViewModel listViewModel;
+    private List<Restaurant> restaurants = new ArrayList<>();
+    private FirebaseFirestore firebaseFirestore;
+    private Map<Marker, DetailsResult> mMarkers;
+    private boolean mOrigin = false;
 
 
     @Override
@@ -93,12 +103,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         mapView = mapFragment.getView();
 
         CheckGooglePlayServices();
+        listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        //getMarkers();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
 
         return view;
     }
-
 
 
     @Override
@@ -109,7 +120,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
             mMap.setMyLocationEnabled(true);
-            mMap.getUiSettings().setMyLocationButtonEnabled(true); // GEOLOCALISATION BUTTON
+            mMap.getUiSettings().setMyLocationButtonEnabled(true); // GEOLOCATION BUTTON
 
         } else {
             ActivityCompat.requestPermissions(getActivity(), new String[] {
@@ -125,8 +136,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
         }
 
 
-        // CHECK IF GPS IS ENABLE OR NOT AND THEN REQUEST USER TO ENABLE IT
-        isGpsEnabled();
+        isGpsEnabled(); // CHECK IF GPS IS ENABLE OR NOT AND THEN REQUEST USER TO ENABLE IT
 
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
 
@@ -139,7 +149,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
 
             }
         });
-
         task.addOnFailureListener(getActivity(), new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
@@ -153,6 +162,15 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
                 }
             }
         });
+
+        //
+
+        mMap.clear();
+        mMap.addMarker(new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
+                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)))  --> icone personnalisée
+                .title("Hello world"));
 
     }
 
@@ -205,6 +223,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
                                             latitude = mLastKnownLocation.getLatitude();
                                             longitude = mLastKnownLocation.getLongitude();
                                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+
                                             mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
                                         }
                                     };
@@ -228,4 +247,12 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback {
     }
 
 
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Intent intent = new Intent(getContext(), DetailsActivity.class);
+        DetailsResult tag = (DetailsResult) marker.getTag();
+        intent.putExtra("id", tag.getPlaceId());
+        startActivity(intent);
+        return false;
+    }
 }

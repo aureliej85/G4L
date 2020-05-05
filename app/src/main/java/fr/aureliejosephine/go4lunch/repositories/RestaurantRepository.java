@@ -14,46 +14,63 @@ import fr.aureliejosephine.go4lunch.models.User;
 public class RestaurantRepository {
 
     private static final String COLLECTION_NAME = "restaurants";
+    private CollectionReference restaurantCollection;
+    private Restaurant restaurant;
+    private static volatile RestaurantRepository INSTANCE;
+
+    public static RestaurantRepository getInstance(){
+        if(INSTANCE == null){
+            INSTANCE = new RestaurantRepository();
+        }
+        return INSTANCE;
+    }
+
+    public RestaurantRepository(){
+        this.restaurantCollection = getRestaurantsCollection();
+    }
+
+
+
 
     // --- COLLECTION REFERENCE ---
 
-    public static CollectionReference getRestaurantsCollection(){
+    public  CollectionReference getRestaurantsCollection(){
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
     // --- CREATE RESTAURANT ---
 
-    public static Task<Void> createRestaurant(String id, String name, String urlPhoto, List<User> workmatesHere) {
+    public Task<Void> createRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, List<User> workmatesHere) {
 
-        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, workmatesHere);
+        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, address, phoneNumber, website, workmatesHere);
 
-        return RestaurantRepository.getRestaurantsCollection().document(id).set(restaurantToCreate);
+        return restaurantCollection.document(id).set(restaurantToCreate);
     }
 
     // --- GET RESTAURANT ---
 
-    public static Task<DocumentSnapshot> getRestaurant(String id){
-        return RestaurantRepository.getRestaurantsCollection().document(id).get();
+    public Task<DocumentSnapshot> getRestaurant(String id){
+        return restaurantCollection.document(id).get();
     }
 
 
-    public static Task<QuerySnapshot> getAllRestaurants(){
-        return RestaurantRepository.getRestaurantsCollection().get();
+    public  Task<QuerySnapshot> getAllRestaurants(){
+        return getRestaurantsCollection().get();
     }
 
     // --- UPDATE RESTAURANT ---
 
-    public static Task<Void> updateRestaurant(String id, List<User> userList) {
+    public  Task<Void> updateRestaurant(String id, List<User> userList) {
 
-        return RestaurantRepository.getRestaurantsCollection().document(id).update("usersEatingHere", userList);
+        return restaurantCollection.document(id).update("usersEatingHere", userList);
     }
 
 
 
     // --- DELETE RESTAURANT---
 
-    public static Task<Void> deleteRestaurant(String id) {
-        return RestaurantRepository.getRestaurantsCollection().document(id).delete();
+    public Task<Void> deleteRestaurant(String id) {
+        return restaurantCollection.document(id).delete();
     }
 
 }

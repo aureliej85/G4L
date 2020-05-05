@@ -21,7 +21,9 @@ public class ListRepository {
     }
 
     public LiveData<NearByApiResponse> getRestaurants(String location){
+
         final MutableLiveData<NearByApiResponse> data = new MutableLiveData<>();
+
         placeApi.getRestaurants(location).enqueue(new Callback<NearByApiResponse>() {
 
             @Override
@@ -31,7 +33,7 @@ public class ListRepository {
 
                     Log.d(TAG, "articles total result:: " + response.body().getResults());
                     Log.d(TAG, "articles size:: " + response.body().getResults().size());
-                    Log.d(TAG, "articles title pos 0:: " + response.body().getResults().get(0).getName());
+                  //  Log.d(TAG, "articles title pos 0:: " + response.body().getResults().get(0));
                 }
             }
 

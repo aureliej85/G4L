@@ -40,8 +40,8 @@ public class BookingRepository {
 
     // --- CREATE ---
 
-    public Task<DocumentReference> createBooking(String rName, String rUrlPic, String uIdr, String uUsername, String rDate){
-        Booking bookingToCreate = new Booking(rName, rUrlPic, uIdr, uUsername, rDate);
+    public Task<DocumentReference> createBooking(String rName, String rUrlPic, String uIdr, String uUsername, String uPic, String rDate){
+        Booking bookingToCreate = new Booking(rName, rUrlPic, uIdr, uUsername, uPic, rDate);
         return bookingCollection.add(bookingToCreate);
     }
 
@@ -60,5 +60,13 @@ public class BookingRepository {
         booking.setrUrlPic(rUrlPic);
         return bookingCollection.document("rName").update("rUrlPic", rUrlPic);
     }
+
+
+    // --- DELETE ---
+
+    public Task<Void> deleteBooking(String id) {
+        return bookingCollection.document(id).delete();
+    }
+
 
 }

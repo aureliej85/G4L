@@ -8,23 +8,31 @@
 
     <TextView
         android:id="@+id/titleItemList"
-        android:layout_width="wrap_content"
+        android:layout_width="211dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
         android:layout_marginTop="16dp"
+        android:ellipsize="marquee"
+        android:maxLines="2"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/distTv"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Le Zinc" />
 
     <TextView
         android:id="@+id/addressItemList"
-        android:layout_width="wrap_content"
+        android:layout_width="211dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="7dp"
+        android:layout_marginTop="8dp"
+        android:ellipsize="marquee"
+        android:maxLines="2"
         android:text="12 rue du faubourg poissonniere"
         android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/personLogoIv"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/titleItemList" />
 
@@ -43,13 +51,55 @@
         android:id="@+id/hoursDetailsTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="27dp"
+        android:layout_marginStart="24dp"
         android:layout_marginTop="7dp"
-        android:text="TextView"
+        android:text="Open until 7pm"
         android:textSize="10sp"
         android:textStyle="italic"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/addressItemList" />
+
+    <ImageView
+        android:id="@+id/personLogoIv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="1dp"
+        app:layout_constraintEnd_toStartOf="@+id/nbUserHereTv"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/ic_person_black_24dp" />
+
+    <TextView
+        android:id="@+id/nbUserHereTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="2dp"
+        android:text="(3)"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/picItemList"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/distTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="2dp"
+        android:text="203m"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/picItemList"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="2dp"
+        app:layout_constraintEnd_toStartOf="@+id/picItemList"
+        app:layout_constraintTop_toBottomOf="@+id/personLogoIv"
+        app:srcCompat="@drawable/ic_star_black_24dp" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

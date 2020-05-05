@@ -19,8 +19,8 @@ public class BookingViewModel extends AndroidViewModel {
     }
 
 
-    public void createBooking(String rName, String rUrlPic, String uIdr, String uUsername, String rDate){
-        bookingRepository.createBooking(rName, rUrlPic, uIdr, uUsername, rDate).addOnFailureListener(new OnFailureListener() {
+    public void createBooking(String rName, String rUrlPic, String uIdr, String uUsername, String uPic, String rDate){
+        bookingRepository.createBooking(rName, rUrlPic, uIdr, uUsername, uPic, rDate).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.i("BookingViewModel", "onFailure: createBooking" + e.toString());
@@ -34,6 +34,16 @@ public class BookingViewModel extends AndroidViewModel {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.i("BookingViewModel", "onFailure: updateUrlPicRestaurant " + e.toString());
+            }
+        });
+    }
+
+
+    public void deleteBooking(String id){
+        bookingRepository.deleteBooking(id).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("BookingViewModel", "onFailure: deleteBooking " + e.toString());
             }
         });
     }
