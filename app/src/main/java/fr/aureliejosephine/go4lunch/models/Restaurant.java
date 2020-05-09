@@ -18,13 +18,13 @@ public class Restaurant {
     private int rating;
     private String phoneNumber;
     private String webSite;
-    private List<User> workmatesHere;
+    private List<User> usersEatingHere;
     private String placeId;
 
     public Restaurant(){
     }
 
-    public Restaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String webSite, String placeId, List<User> workmatesHere){
+    public Restaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String webSite, String placeId, List<User> usersEatingHere){
         this.uid = id;
         this.name = name;
         this.urlPhoto = urlPhoto;
@@ -32,7 +32,7 @@ public class Restaurant {
         this.phoneNumber = phoneNumber;
         this.webSite = webSite;
         this.placeId = placeId;
-        this.workmatesHere = workmatesHere;
+        this.usersEatingHere = usersEatingHere;
     }
 
     public Restaurant(String uid, String name, Double latitude, Double longitude, @Nullable String address, @Nullable int openingHours, @Nullable String urlPhoto, @Nullable int rating, String phoneNumber, String webSite) {
@@ -46,7 +46,7 @@ public class Restaurant {
         this.rating = rating;
         this.phoneNumber = phoneNumber;
         this.webSite = webSite;
-        workmatesHere = new ArrayList<>();
+        usersEatingHere = new ArrayList<>();
     }
 
     public String getUid() {
@@ -114,12 +114,16 @@ public class Restaurant {
     }
 
     public void setUserGoingEating(List<User> users){
-        workmatesHere = users;
+        usersEatingHere = users;
 
     }
 
+    public void setUsersEatingHere(List<User> usersEatingHere) {
+        this.usersEatingHere = usersEatingHere;
+    }
+
     public List<User> getUsersEatingHere(){
-        return workmatesHere;
+        return usersEatingHere;
     }
 
     public int getRating() {

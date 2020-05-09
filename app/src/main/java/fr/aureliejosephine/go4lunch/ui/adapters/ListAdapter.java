@@ -37,6 +37,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.Booking;
+import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.repositories.BookingRepository;
 import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
@@ -58,6 +59,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     private String dist;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference restaurantRef;
+    private Restaurant restaurant;
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
     public static final int MAX_WIDTH = 300;
@@ -88,6 +90,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
         DetailsResult result = restaurantsList.get(position);
 
         holder.UpdateWithData(this.restaurantsList.get(position));
+
+
 
         //holder.nbOfUsersEatingHere(result);
 
@@ -167,6 +171,31 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 }
 
             });
+
+
+            // Nb Users
+
+            restaurantRef = db.collection("restaurants").document(result.getId());
+            restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    restaurant = documentSnapshot.toObject(Restaurant.class);
+
+                    Log.e("ListAdapter", "onSuccess: before if statement in nbUser");
+
+                    if(restaurant.getUsersEatingHere() != null){
+                        int nbUser = restaurant.getUsersEatingHere().size();
+                        String nbUserEatingHere = String.valueOf(nbUser);
+                        nbUserTv.setText(nbUserEatingHere);
+
+                        Log.e("ListAdapter", "onSuccess:  nbUser" + nbUserEatingHere);
+                    } else {
+                        nbUserTv.setText("0");
+                    }
+
+                }
+            });
+
 
 
 

@@ -16,6 +16,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -54,6 +55,7 @@ public class DetailsActivity extends BaseActivity {
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
     private DocumentReference restaurantRef;
+    private DocumentReference newRestaurantRef;
     private FirebaseFirestore firebaseFirestore;
     private RecyclerView recyclerView;
     private FirestoreRecyclerAdapter adapter;
@@ -166,7 +168,7 @@ public class DetailsActivity extends BaseActivity {
                                     Toast.makeText(DetailsActivity.this, "Vous avez déjà sélectionné ce restaurant", Toast.LENGTH_SHORT).show();
 
                                 } else {
-
+                                    removeUserEatingHere();
                                     userViewModel.UpdateRestaurantChosen(getCurrentUser().getUid(), restaurantsResponse.getResult().getPlaceId(), restaurantsResponse.getResult().getName());
                                     Toast.makeText(DetailsActivity.this, "Resto bien selectionné", Toast.LENGTH_SHORT).show();
                                     chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
@@ -187,28 +189,34 @@ public class DetailsActivity extends BaseActivity {
     }
 
 
-   public void updateUserEatingHere(){
+   public void removeUserEatingHere(){
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
 
-           restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-               @Override
-               public void onSuccess(DocumentSnapshot documentSnapshot) {
-                   restaurant = documentSnapshot.toObject(Restaurant.class);
+            User updateUser= new User(getCurrentUser().getUid(), getCurrentUser().getDisplayName(), getCurrentUser().getEmail());
 
-                  //userList = restaurant.getUsersEatingHere();
-                   User updateUser= new User(getCurrentUser().getUid(), getCurrentUser().getDisplayName(), getCurrentUser().getEmail());
-                   userList.add(updateUser);
-                   String rId = documentSnapshot.getId();
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User wm = documentSnapshot.toObject(User.class);
+                String currentPlaceId = wm.getPlaceId();
 
-                   restaurantViewModel.UpdateUserRestaurant(rId, userList).observe(DetailsActivity.this, restaurantUpdate->{
+                //newRestaurantRef = db.collection("restaurants").document("placeId");
+                String username = getCurrentUser().getDisplayName();
+                restaurantRef.update("usersEatingHere", FieldValue.arrayRemove(username));
 
 
-                   });
 
-               }
-
-       });
+            }
+        });
 
     }
+
+    public void updateUserEatingHere(){
+        User updateUser= new User(getCurrentUser().getUid(), getCurrentUser().getDisplayName(), getCurrentUser().getEmail());
+        restaurantRef.update("usersEatingHere", FieldValue.arrayUnion(updateUser));
+
+    }
+
+
 
 
     public void clickOnPhoneButton(){

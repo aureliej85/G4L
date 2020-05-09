@@ -44,6 +44,7 @@ public class AuthActivity extends BaseActivity {
                                 Arrays.asList(
                                         new AuthUI.IdpConfig.FacebookBuilder().build(), //GOOGLE
                                         new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.TwitterBuilder().build(),
                                         new AuthUI.IdpConfig.EmailBuilder().build())) //EMAIL)) // FACEBOOK)) // SUPPORT GOOGLE))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.logo_g4l)
