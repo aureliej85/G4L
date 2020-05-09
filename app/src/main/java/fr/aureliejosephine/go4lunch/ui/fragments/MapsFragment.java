@@ -45,6 +45,8 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -58,15 +60,19 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
+import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.models.places.NearByApiResponse;
 import fr.aureliejosephine.go4lunch.network.PlaceApi;
 import fr.aureliejosephine.go4lunch.network.PlaceService;
+import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.ui.activities.DetailsActivity;
 import fr.aureliejosephine.go4lunch.viewmodel.ListViewModel;
+import fr.aureliejosephine.go4lunch.viewmodel.RestaurantViewModel;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -88,10 +94,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private final float DEFAULT_ZOOM= 16;
     private View mapView;
     private ListViewModel listViewModel;
+    private RestaurantViewModel restaurantViewModel;
     private List<Restaurant> restaurants = new ArrayList<>();
     private FirebaseFirestore firebaseFirestore;
     private Map<Marker, DetailsResult> mMarkers;
-    private boolean mOrigin = false;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+
 
 
     @Override
@@ -104,6 +113,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
 
         CheckGooglePlayServices();
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        restaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
         //getMarkers();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
@@ -115,7 +125,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     @Override
     public void onMapReady(GoogleMap googleMap) {
         Log.i("MapsActivity", "onMapReady: ");
+
         mMap = googleMap;
+        mMap.clear();
 
         if (ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -146,7 +158,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
-
+                getMarkers();
             }
         });
         task.addOnFailureListener(getActivity(), new OnFailureListener() {
@@ -162,16 +174,57 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                 }
             }
         });
+    }
 
-        //
 
-        mMap.clear();
-        mMap.addMarker(new MarkerOptions()
+    private void getMarkers(){
+        // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
+        Log.e("ListFragment", "onSuccess: " );
+
+        listViewModel.getRestaurants("48.858411,2.912251").observe(getActivity(), restaurantsResponse -> {
+            if (restaurantsResponse != null) {
+                Log.e("ListFragment", "onSuccess: " );
+                List<DetailsResult> restaurants = restaurantsResponse.getResults();
+
+                for(int i = 0;i < restaurants.size(); i++){
+                    createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName());
+                }
+            }
+        });
+
+    }
+
+
+    protected /*Marker*/ void  createMarker(double latitude, double longitude, String title) {
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                User user = documentSnapshot.toObject(User.class);
+
+                if(documentSnapshot.getData().get("placeName") != null){
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(latitude, longitude))
+                            .anchor(0.5f, 0.5f)
+                            .title(title)
+                            //.snippet(snippet)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                } else {
+                    mMap.addMarker(new MarkerOptions()
+                            .position(new LatLng(latitude, longitude))
+                            .anchor(0.5f, 0.5f)
+                            .title(title)
+                            //.snippet(snippet)
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                }
+            }
+        });
+
+        /*return mMap.addMarker(new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow)))  --> icone personnalisée
-                .title("Hello world"));
-
+                .anchor(0.5f, 0.5f)
+                .title(title)
+                //.snippet(snippet)
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));*/
     }
 
 
@@ -230,11 +283,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
 
                                     mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
                                 }
-
-
                             }
                         });
-
             } else {
                 Toast.makeText(getActivity(), "Turn on location", Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
@@ -243,7 +293,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         } else {
             requestPermissions();
         }
-
     }
 
 

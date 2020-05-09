@@ -9,7 +9,7 @@
     <ImageView
         android:id="@+id/picDetailsIv"
         android:layout_width="410dp"
-        android:layout_height="249dp"
+        android:layout_height="277dp"
         android:adjustViewBounds="true"
         android:maxHeight="300dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,15 +28,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/picDetailsIv"
         app:srcCompat="@drawable/ic_add_circle_black_24dp" />
-
-    <Button
-        android:id="@+id/bouton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Button"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout"
-        android:onClick="phoneRestaurant"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_wm_details"
@@ -62,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="9dp"
+            android:layout_marginTop="15dp"
             android:fontFamily="@font/roboto"
             android:text="La Girafle Courte"
             android:textAlignment="viewStart"
@@ -83,16 +74,82 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/titleDetailTv" />
 
-        <ImageView
-            android:id="@+id/starsDetailsIv"
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="15dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintStart_toEndOf="@+id/titleDetailTv"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_star_black_24dp" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout">
+
+        <ImageButton
+            android:id="@+id/phoneDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="34dp"
+            android:layout_marginTop="1dp"
+            android:backgroundTint="@android:color/transparent"
+            android:src="@drawable/ic_phone"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/callTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="1dp"
+            android:text="CALL"
+            android:textColor="@color/colorPrimaryDark"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/phoneDetail" />
+
+        <ImageView
+            android:id="@+id/starDetail"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="84dp"
+            android:layout_marginTop="10dp"
+            android:foregroundTint="@color/colorPrimaryDark"
+            android:src="@drawable/ic_star_black_24dp"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintStart_toEndOf="@+id/phoneDetail"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/websiteDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="86dp"
+            android:layout_marginTop="10dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_public"
+            android:tint="@color/colorPrimaryDark"
+            app:layout_constraintStart_toEndOf="@+id/starDetail"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/textView5"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="103dp"
+            android:layout_marginTop="11dp"
+            android:text="LIKE"
+            android:textColor="@color/colorPrimaryDark"
+            app:layout_constraintStart_toEndOf="@+id/callTv"
+            app:layout_constraintTop_toBottomOf="@+id/starDetail" />
+
+        <TextView
+            android:id="@+id/websiteTv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="89dp"
+            android:layout_marginTop="11dp"
+            android:text="WEBSITE"
+            android:textColor="@color/colorPrimaryDark"
+            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintTop_toBottomOf="@+id/websiteDetail" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 

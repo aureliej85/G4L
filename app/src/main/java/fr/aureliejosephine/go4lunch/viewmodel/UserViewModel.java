@@ -23,8 +23,8 @@ public class UserViewModel extends AndroidViewModel {
 
     // -- CREATE USER IN FIRESTORE --
 
-     public void CreateUser(String uid, String username, String urlPicture, String uEmail, String restaurantName){
-        userRepository.createUser(uid, username, urlPicture, uEmail, restaurantName).addOnFailureListener(new OnFailureListener() {
+     public void CreateUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName){
+        userRepository.createUser(uid, username, urlPicture, uEmail, placeId, placeName).addOnFailureListener(new OnFailureListener() {
              @Override
              public void onFailure(@NonNull Exception e) {
                  Log.i("UserViewModel", "onFailure: " + e.toString());
@@ -49,8 +49,8 @@ public class UserViewModel extends AndroidViewModel {
 
     // -- UPDATE RESTAURANT CHOSEN BY THE USER IN FIRESTORE --
 
-    public void UpdateRestaurantChosen(String uid, String restaurantName){
-        userRepository.updateRestaurantChosen(uid, restaurantName).addOnFailureListener(new OnFailureListener() {
+    public void UpdateRestaurantChosen(String uid, String placeId, String placeName){
+        userRepository.updateRestaurantChosen(uid, placeId, placeName).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.i("UserViewModel", "onFailure: UpdateRestaurantChosen " + e.toString());

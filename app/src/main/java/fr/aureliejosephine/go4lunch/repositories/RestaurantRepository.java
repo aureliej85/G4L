@@ -8,6 +8,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.List;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.User;
 
@@ -17,6 +19,7 @@ public class RestaurantRepository {
     private CollectionReference restaurantCollection;
     private Restaurant restaurant;
     private static volatile RestaurantRepository INSTANCE;
+    //private Object MutableLiveData;
 
     public static RestaurantRepository getInstance(){
         if(INSTANCE == null){
@@ -40,9 +43,9 @@ public class RestaurantRepository {
 
     // --- CREATE RESTAURANT ---
 
-    public Task<Void> createRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, List<User> workmatesHere) {
+    public Task<Void> createRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, String placeId, List<User> workmatesHere) {
 
-        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, address, phoneNumber, website, workmatesHere);
+        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, address, phoneNumber, website, placeId,  workmatesHere);
 
         return restaurantCollection.document(id).set(restaurantToCreate);
     }
@@ -53,6 +56,10 @@ public class RestaurantRepository {
         return restaurantCollection.document(id).get();
     }
 
+    public Task<DocumentSnapshot> getAllRestaurant(){
+        return restaurantCollection.document().get();
+    }
+
 
     public  Task<QuerySnapshot> getAllRestaurants(){
         return getRestaurantsCollection().get();
@@ -60,9 +67,10 @@ public class RestaurantRepository {
 
     // --- UPDATE RESTAURANT ---
 
-    public  Task<Void> updateRestaurant(String id, List<User> userList) {
-
-        return restaurantCollection.document(id).update("usersEatingHere", userList);
+    public LiveData<Restaurant> updateRestaurant(String id, List<User> userList) {
+        MutableLiveData<Restaurant> updateRestaurantLiveData = new MutableLiveData<Restaurant>();
+        restaurantCollection.document(id).update("usersEatingHere", userList);
+        return  updateRestaurantLiveData;
     }
 
 

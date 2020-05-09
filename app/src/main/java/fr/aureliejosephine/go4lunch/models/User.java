@@ -12,7 +12,8 @@ public class User {
     @Nullable
     private String picture;
     private String email;
-    private String restaurantName;
+    private String placeId;
+    private String placeName;
 
     public User() { }
 
@@ -29,12 +30,13 @@ public class User {
         this.email = uEmail;
     }
 
-    public User(String uid, String username, String picture, String uEmail, String restaurantName) {
+    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName) {
         this.uid = uid;
         this.username = username;
         this.picture = picture;
         this.email = uEmail;
-        this.restaurantName = restaurantName;
+        this.placeId = placeId;
+        this.placeName = placeName;
     }
 
     // --- GETTERS ---
@@ -44,8 +46,11 @@ public class User {
     public String getEmail() {
         return email;
     }
-    public String getRestaurantName() {
-        return restaurantName;
+    public String getPlaceId() {
+        return placeId;
+    }
+    public String getPlaceName() {
+        return placeName;
     }
 
     // --- SETTERS ---
@@ -55,7 +60,10 @@ public class User {
     public void setEmail(String email) {
         this.email = email;
     }
-    public void setRestaurantName(String restaurantName) {
-        this.restaurantName = restaurantName;
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
+    }
+    public void setPlaceName(String placeName) {
+        this.placeName = placeName;
     }
 }

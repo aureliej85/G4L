@@ -36,13 +36,13 @@ public class WorkmatesAdapter extends FirestoreRecyclerAdapter<User, WorkmatesAd
     @Override
     protected void onBindViewHolder(@NonNull UsersViewHolder holder, int position, @NonNull User model) {
 
-        if(model.getRestaurantName() == null){
+        if(model.getPlaceId() == null){
             holder.descrTv.setText(model.getUsername() + " hasn't decided yet");
             holder.descrTv.setTypeface(null, Typeface.ITALIC);
             holder.descrTv.setTextColor(R.color.quantum_grey);
 
         } else {
-            holder.descrTv.setText(model.getUsername() + " is eating " + model.getRestaurantName());
+            holder.descrTv.setText(model.getUsername() + " will go to " + model.getPlaceName());
             holder.descrTv.setTypeface(null, Typeface.BOLD);
         }
 

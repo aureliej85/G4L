@@ -36,9 +36,9 @@ public class UserRepository {
 
     // --- CREATE USER ---
 
-    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String restaurantName) {
+    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName) {
 
-        User userToCreate = new User(uid, username, urlPicture, uEmail, restaurantName);
+        User userToCreate = new User(uid, username, urlPicture, uEmail, placeId, placeName);
 
         return userCollection.document(uid).set(userToCreate);
     }
@@ -67,8 +67,8 @@ public class UserRepository {
         return userCollection.document(uid).update("picture", urlPicture);
     }
 
-    public Task<Void> updateRestaurantChosen(String uid, String restaurantName) {
-        return userCollection.document(uid).update("restaurantName", restaurantName);
+    public Task<Void> updateRestaurantChosen(String uid, String placeId, String placeName) {
+        return userCollection.document(uid).update("placeId", placeId, "placeName", placeName);
     }
 
 

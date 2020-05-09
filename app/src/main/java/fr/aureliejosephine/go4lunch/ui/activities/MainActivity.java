@@ -3,16 +3,13 @@ package fr.aureliejosephine.go4lunch.ui.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
-import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.ui.fragments.ListFragment;
 import fr.aureliejosephine.go4lunch.ui.fragments.MapsFragment;
@@ -26,7 +23,6 @@ import android.content.Intent;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -49,7 +45,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -57,7 +52,6 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -260,11 +254,11 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         if(documentSnapshot != null){
 
                             User wmUser = documentSnapshot.toObject(User.class);
-                            //String result = wmUser.getRestaurantName();
+                            String placeId = wmUser.getPlaceId();
 
-                            if(wmUser.getRestaurantName() != null){
+                            if(wmUser.getPlaceId() != null){
                                 Intent intent = new Intent(getApplication(), DetailsActivity.class);
-                                intent.putExtra("result", result);
+                                intent.putExtra("placeId", placeId);
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(MainActivity.this, "Vous n'avez pas sectionné de restaurant", Toast.LENGTH_SHORT).show();
@@ -384,7 +378,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             String uid = this.getCurrentUser().getUid();
             String uEmail = this.getCurrentUser().getEmail();
 
-            userViewModel.CreateUser(uid, username, urlPicture, uEmail, null);
+            userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, null);
 
         }
     }

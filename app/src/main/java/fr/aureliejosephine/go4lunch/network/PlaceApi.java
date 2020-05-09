@@ -19,7 +19,7 @@ public interface PlaceApi {
     Call<DetailsApiResponse> getDetailsRestaurants(@Query("place_id") String placeId);
 
     @GET("distancematrix/json?units=metric&key=" + API_KEY)
-    Call<DistanceApiResponse> getDistance(@Query("origins") String origins, @Query("destinations") String destinations);
+    Call<DistanceApiResponse> getDistance(@Query("origins") String originCoord, @Query("destinations") String destPlaceId);
 
 
 }

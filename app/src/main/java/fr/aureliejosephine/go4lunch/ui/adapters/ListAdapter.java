@@ -32,6 +32,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
@@ -54,7 +55,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
     private RestaurantViewModel restaurantViewModel;
     private DistanceViewModel distanceViewModel;
-
+    private String dist;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference restaurantRef;
 
@@ -72,6 +73,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
         restaurantViewModel = ViewModelProviders.of((FragmentActivity) context).get(RestaurantViewModel.class);
         distanceViewModel = ViewModelProviders.of((FragmentActivity) context).get(DistanceViewModel.class);
+
     }
 
     @NonNull
@@ -93,7 +95,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), DetailsActivity.class);
-                intent.putExtra("result", result);
+                //intent.putExtra("result", result);
+                intent.putExtra("placeId", result.getPlaceId());
                 view.getContext().startActivity(intent);
             }
         });
@@ -136,7 +139,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
             this.titleTv.setText(result.getName());
             this.addrTv.setText(result.getVicinity());
-
+            //this.distance.setText(dist);
 
             // Display Photos
             if (!(result.getPhotos() == null)){
@@ -152,16 +155,22 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 createRestaurantInFirestore(result, null);
             }
 
+
             // Distance
-           /* distanceViewModel.getDistance("48.858411,2.912251","48.851932,2.377802").observe(getContext(), distanceResponse -> {
+           distanceViewModel.getDistance("48.858411,2.912251",result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
                 if (distanceResponse != null) {
 
-                    String dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
+                    dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
                     this.distance.setText(dist);
+                } else{
+                    Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
                 }
 
+            });
 
-            });*/
+
+
+
 
         }
 
@@ -174,6 +183,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 String uid = result.getId();
                 String phoneNumber = result.getFormattedPhoneNumber();
                 String website = result.getWebsite();
+                String placeId = result.getPlaceId();
 
             restaurantRef = db.collection("restaurants").document(result.getId());
 
@@ -182,7 +192,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                     if(!documentSnapshot.exists())
-                    restaurantViewModel.CreateRestaurant(result.getId(), result.getName(), url, address, phoneNumber, website, null);
+                    restaurantViewModel.CreateRestaurant(result.getId(), result.getName(), url, address, phoneNumber, website, placeId, null);
                 }
             });
 

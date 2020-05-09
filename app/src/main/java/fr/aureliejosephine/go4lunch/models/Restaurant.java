@@ -19,17 +19,19 @@ public class Restaurant {
     private String phoneNumber;
     private String webSite;
     private List<User> workmatesHere;
+    private String placeId;
 
     public Restaurant(){
     }
 
-    public Restaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String webSite, List<User> workmatesHere){
+    public Restaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String webSite, String placeId, List<User> workmatesHere){
         this.uid = id;
         this.name = name;
         this.urlPhoto = urlPhoto;
         this.address = address;
         this.phoneNumber = phoneNumber;
         this.webSite = webSite;
+        this.placeId = placeId;
         this.workmatesHere = workmatesHere;
     }
 
@@ -116,7 +118,6 @@ public class Restaurant {
 
     }
 
-
     public List<User> getUsersEatingHere(){
         return workmatesHere;
     }
@@ -135,6 +136,14 @@ public class Restaurant {
 
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public String getPlaceId() {
+        return placeId;
+    }
+
+    public void setPlaceId(String placeId) {
+        this.placeId = placeId;
     }
 
     public String getWebSite() {
