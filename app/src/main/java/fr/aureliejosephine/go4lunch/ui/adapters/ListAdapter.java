@@ -2,6 +2,7 @@ package fr.aureliejosephine.go4lunch.ui.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -170,7 +171,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             }
 
 
-            // Distance
+            // Distance - VIEWMODEL
+
+           // Location.distanceBetween(talatitude,talongitude,latitude_delendroit, longitude_delendroit, résultats);
+            //Vrai résultats=math.round(résultat)
+
           /* distanceViewModel.getDistance("48.858411,2.912251",result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
                 if (distanceResponse != null) {
 
@@ -184,30 +189,31 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
             // Nb Users
-
-            restaurantRef = db.collection("restaurants").document(result.getId());
+           /*restaurantRef = db.collection("restaurants").document(result.getId());
             restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     restaurant = documentSnapshot.toObject(Restaurant.class);
 
                     Log.e("ListAdapter", "onSuccess: before if statement in nbUser");
+                    if(documentSnapshot != null){
+                        if(restaurant.getUsersEatingHere() != null){
+                            int nbUser = restaurant.getUsersEatingHere().size();
+                            String nbUserEatingHere = String.valueOf(nbUser);
+                            nbUserTv.setText(nbUserEatingHere);
 
-                    if(restaurant.getUsersEatingHere() != null){
-                        int nbUser = restaurant.getUsersEatingHere().size();
-                        String nbUserEatingHere = String.valueOf(nbUser);
-                        nbUserTv.setText(nbUserEatingHere);
-
-                        Log.e("ListAdapter", "onSuccess:  nbUser" + nbUserEatingHere);
-                    } else {
-                        nbUserTv.setText("0");
+                            Log.e("ListAdapter", "onSuccess:  nbUser" + nbUserEatingHere);
+                        } else {
+                            nbUserTv.setText("0");
+                        }
                     }
 
+
                 }
-            });
+            });*/
+
 
             // Opening hour - Date currentTime = Calendar.getInstance().getTime();
-
             /*detailsViewModel.getDetailsRestaurant(result.getId()).observe((FragmentActivity) context, detailsResponse ->{
 
                 Calendar calendar = Calendar.getInstance();
@@ -250,7 +256,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
             // TEST
-           /* Calendar calendar = Calendar.getInstance();
+           /*Calendar calendar = Calendar.getInstance();
             int day = calendar.get(Calendar.DAY_OF_WEEK);
             String test = result.getOpeningHours().getWeekdayText().get(6);
                 switch (day) {
@@ -288,6 +294,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             }else{
                 ratingBar.setVisibility(View.GONE);
             }
+
+
 
 
         }

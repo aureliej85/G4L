@@ -5,8 +5,12 @@ import android.util.Log;
 import android.widget.Toast;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
 import fr.aureliejosephine.go4lunch.repositories.UserRepository;
 
 
@@ -23,8 +27,8 @@ public class UserViewModel extends AndroidViewModel {
 
     // -- CREATE USER IN FIRESTORE --
 
-     public void CreateUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName){
-        userRepository.createUser(uid, username, urlPicture, uEmail, placeId, placeName).addOnFailureListener(new OnFailureListener() {
+     public void CreateUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked){
+        userRepository.createUser(uid, username, urlPicture, uEmail, placeId, placeName, restaurantsLiked).addOnFailureListener(new OnFailureListener() {
              @Override
              public void onFailure(@NonNull Exception e) {
                  Log.i("UserViewModel", "onFailure: " + e.toString());
@@ -56,6 +60,10 @@ public class UserViewModel extends AndroidViewModel {
                 Log.i("UserViewModel", "onFailure: UpdateRestaurantChosen " + e.toString());
             }
         });
+    }
+
+    public LiveData<String> UpdateRestaurantLiked(String id, List<String> userList){
+        return userRepository.updateRestaurantLiked(id, userList);
     }
 
 

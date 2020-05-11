@@ -1,6 +1,8 @@
 package fr.aureliejosephine.go4lunch.models;
 
 
+import java.util.List;
+
 import androidx.annotation.Nullable;
 
 
@@ -14,6 +16,7 @@ public class User {
     private String email;
     private String placeId;
     private String placeName;
+    private List<String> restaurantsLiked;
 
     public User() { }
 
@@ -30,13 +33,14 @@ public class User {
         this.email = uEmail;
     }
 
-    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName) {
+    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked) {
         this.uid = uid;
         this.username = username;
         this.picture = picture;
         this.email = uEmail;
         this.placeId = placeId;
         this.placeName = placeName;
+        this.restaurantsLiked = restaurantsLiked;
     }
 
     // --- GETTERS ---
@@ -52,6 +56,9 @@ public class User {
     public String getPlaceName() {
         return placeName;
     }
+    public List<String> getRestaurantsLiked() {
+        return restaurantsLiked;
+    }
 
     // --- SETTERS ---
     public void setUsername(String username) { this.username = username; }
@@ -65,5 +72,8 @@ public class User {
     }
     public void setPlaceName(String placeName) {
         this.placeName = placeName;
+    }
+    public void setRestaurantsLiked(List<String> restaurantsLiked) {
+        this.restaurantsLiked = restaurantsLiked;
     }
 }

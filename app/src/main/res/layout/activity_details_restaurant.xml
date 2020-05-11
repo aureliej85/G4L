@@ -17,6 +17,17 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:srcCompat="@tools:sample/avatars" />
 
+    <ImageView
+        android:id="@+id/heartDetail"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="7dp"
+        android:layout_marginEnd="13dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:visibility="invisible"
+        android:src="@drawable/ic_favorite_black_24dp" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabDetails"
         android:layout_width="wrap_content"
@@ -33,12 +44,11 @@
         android:id="@+id/recycler_wm_details"
         android:layout_width="match_parent"
         android:layout_height="200dp"
-        android:layout_marginTop="25dp"
         android:paddingTop="10dp"
         android:scrollbarAlwaysDrawVerticalTrack="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout2" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
@@ -77,6 +87,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout2"
         android:layout_width="match_parent"
         android:layout_height="100dp"
         app:layout_constraintStart_toStartOf="parent"
@@ -86,43 +97,42 @@
             android:id="@+id/phoneDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="34dp"
             android:layout_marginTop="1dp"
+            android:layout_marginEnd="80dp"
             android:backgroundTint="@android:color/transparent"
             android:src="@drawable/ic_phone"
             android:tint="@color/colorPrimaryDark"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/starDetail"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/callTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="50dp"
-            android:layout_marginTop="1dp"
+            android:layout_marginEnd="98dp"
             android:text="CALL"
             android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/likeDetailTv"
             app:layout_constraintTop_toBottomOf="@+id/phoneDetail" />
 
         <ImageView
             android:id="@+id/starDetail"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_marginStart="84dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginTop="8dp"
             android:foregroundTint="@color/colorPrimaryDark"
             android:src="@drawable/ic_star_black_24dp"
             android:tint="@color/colorPrimaryDark"
-            app:layout_constraintStart_toEndOf="@+id/phoneDetail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/websiteDetail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="86dp"
-            android:layout_marginTop="10dp"
+            android:layout_marginStart="80dp"
+            android:layout_marginTop="8dp"
             android:background="@android:color/transparent"
             android:src="@drawable/ic_public"
             android:tint="@color/colorPrimaryDark"
@@ -130,25 +140,25 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView5"
+            android:id="@+id/likeDetailTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="103dp"
             android:layout_marginTop="11dp"
             android:text="LIKE"
             android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintStart_toEndOf="@+id/callTv"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/starDetail" />
 
         <TextView
             android:id="@+id/websiteTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="89dp"
+            android:layout_marginStart="80dp"
             android:layout_marginTop="11dp"
             android:text="WEBSITE"
             android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintStart_toEndOf="@+id/textView5"
+            app:layout_constraintStart_toEndOf="@+id/likeDetailTv"
             app:layout_constraintTop_toBottomOf="@+id/websiteDetail" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

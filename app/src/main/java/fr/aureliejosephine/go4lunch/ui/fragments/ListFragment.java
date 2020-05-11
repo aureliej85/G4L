@@ -14,8 +14,12 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +29,15 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
+import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.ui.adapters.ListAdapter;
 import fr.aureliejosephine.go4lunch.viewmodel.ListViewModel;
-
+import fr.aureliejosephine.go4lunch.viewmodel.RestaurantViewModel;
 
 
 public class ListFragment extends Fragment {
@@ -43,8 +49,6 @@ public class ListFragment extends Fragment {
     private ListViewModel listViewModel;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private int REQUEST_CODE_LOCATION = 44;
-
-
 
     public ListFragment(){ }
 
@@ -78,6 +82,8 @@ public class ListFragment extends Fragment {
 
         adapter = new ListAdapter(getActivity(), restaurantsList);
         recyclerView.setAdapter(adapter);
+        recyclerView.addItemDecoration(new DividerItemDecoration(recyclerView.getContext(),
+                DividerItemDecoration.VERTICAL));
 
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
     }
@@ -123,6 +129,7 @@ public class ListFragment extends Fragment {
                         Looper.getMainLooper() );
 
                     }
+
 
 
 

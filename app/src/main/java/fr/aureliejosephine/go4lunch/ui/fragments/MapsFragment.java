@@ -100,6 +100,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private Map<Marker, DetailsResult> mMarkers;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+    private DocumentReference restaurantRef;
+    private Restaurant restaurant;
 
 
 
@@ -196,26 +198,27 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
 
 
     protected /*Marker*/ void  createMarker(double latitude, double longitude, String title) {
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        restaurantRef = db.collection("restaurants").document("usersEatingHere");
+        restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User user = documentSnapshot.toObject(User.class);
+                restaurant = documentSnapshot.toObject(Restaurant.class);
 
-                if(documentSnapshot.getData().get("placeName") != null){
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(latitude, longitude))
-                            .anchor(0.5f, 0.5f)
-                            .title(title)
-                            //.snippet(snippet)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                } else {
-                    mMap.addMarker(new MarkerOptions()
-                            .position(new LatLng(latitude, longitude))
-                            .anchor(0.5f, 0.5f)
-                            .title(title)
-                            //.snippet(snippet)
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                }
+                if(documentSnapshot == null){
+                        mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(latitude, longitude))
+                                .anchor(0.5f, 0.5f)
+                                .title(title)
+                                //.snippet(snippet)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                    } else {
+                        mMap.addMarker(new MarkerOptions()
+                                .position(new LatLng(latitude, longitude))
+                                .anchor(0.5f, 0.5f)
+                                .title(title)
+                                //.snippet(snippet)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                    }
             }
         });
 

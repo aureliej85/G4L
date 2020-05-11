@@ -12,13 +12,20 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,12 +48,16 @@ import fr.aureliejosephine.go4lunch.viewmodel.UserViewModel;
 
 public class DetailsActivity extends BaseActivity {
 
+    private static final String TAG = "DetailsActivity" ;
     private ImageView picDetails;
     private TextView titleDetails;
     private TextView addressDetails;
     private ImageView chosenRestaurantFab;
     private ImageButton phoneCall;
     private ImageButton website;
+    private ImageView starLike;
+    private ImageView heartLike;
+    private TextView likeTv;
     private User user;
     private Restaurant restaurant;
     private UserViewModel userViewModel;
@@ -62,6 +73,7 @@ public class DetailsActivity extends BaseActivity {
     Intent intent;
     String placeId;
     List<User> userList = new ArrayList<>();
+    private String likeString;
 
 
     @Override
@@ -84,6 +96,8 @@ public class DetailsActivity extends BaseActivity {
         clickOnFabButton();
         clickOnPhoneButton();
         clickOnWebsiteButton();
+        clickOnLikeButton();
+        heartNotif();
     }
 
 
@@ -94,15 +108,16 @@ public class DetailsActivity extends BaseActivity {
         chosenRestaurantFab = findViewById(R.id.fabDetails);
         phoneCall = findViewById(R.id.phoneDetail);
         website = findViewById(R.id.websiteDetail);
+        starLike = findViewById(R.id.starDetail);
+        heartLike = findViewById(R.id.heartDetail);
+        likeTv = findViewById(R.id.likeDetailTv);
     }
-
 
     public void configViewModel(){
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         detailsViewModel = ViewModelProviders.of(this).get(DetailsViewModel.class);
         restaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
     }
-
 
     public void configUI() {
         detailsViewModel.getDetailsRestaurant(placeId).observe(this, detailRestaurant ->{
@@ -123,7 +138,6 @@ public class DetailsActivity extends BaseActivity {
                 });
         }
     });}
-
 
     public void greenCheck(){
 
@@ -149,7 +163,6 @@ public class DetailsActivity extends BaseActivity {
 
         });
     }
-
 
     public void clickOnFabButton(){
         chosenRestaurantFab.setOnClickListener(new View.OnClickListener() {
@@ -188,8 +201,7 @@ public class DetailsActivity extends BaseActivity {
         });
     }
 
-
-   public void removeUserEatingHere(){
+    public void removeUserEatingHere(){
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
 
             User updateUser= new User(getCurrentUser().getUid(), getCurrentUser().getDisplayName(), getCurrentUser().getEmail());
@@ -216,8 +228,69 @@ public class DetailsActivity extends BaseActivity {
 
     }
 
+    public void clickOnLikeButton(){
+        starLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                detailsViewModel.getDetailsRestaurant(placeId).observe(DetailsActivity.this, detailRestaurant -> {
+                    String nameRestaurantLiked = detailRestaurant.getResult().getName();
+                    Query query = db.collection("users").whereEqualTo("restaurantsLiked", detailRestaurant.getResult().getName());
 
+                    query.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                        @Override
+                        public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e) {
+                            likeString = likeTv.getText().toString();
+                            Log.e(TAG, "onEvent: " + likeString );
+                            if(likeString.equalsIgnoreCase("LIKE")){
+                                userRef.update("restaurantsLiked", FieldValue.arrayUnion(nameRestaurantLiked) ).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        heartLike.setVisibility(View.VISIBLE);
+                                        likeTv.setText("UNLIKE");
+                                    }
+                                });
+                            } else if(likeString.equalsIgnoreCase("UNLIKE")){
+                                userRef.update("restaurantsLiked", FieldValue.arrayRemove(nameRestaurantLiked) ).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        heartLike.setVisibility(View.INVISIBLE);
+                                        likeTv.setText("LIKE");
+                                    }
+                                });
 
+                            }
+                        }
+                    });
+                });
+            }
+        });
+    }
+
+    public void heartNotif(){
+        detailsViewModel.getDetailsRestaurant(placeId).observe(DetailsActivity.this, detailRestaurant -> {
+            //String nameRestaurantLiked = detailRestaurant.getResult().getName();
+            Query query = db.collection("users").whereArrayContains("restaurantsLiked", detailRestaurant.getResult().getName());
+            likeString = likeTv.getText().toString();
+
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if(task.isSuccessful()){
+
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d(TAG, document.getId() + " => " + document.getData());
+                            heartLike.setVisibility(View.VISIBLE);
+                            likeTv.setText("UNLIKE");
+                        }
+
+                    }else {
+                        heartLike.setVisibility(View.INVISIBLE);
+                        likeTv.setText("LIKE");
+                    }
+                }
+            });
+        });
+    }
 
     public void clickOnPhoneButton(){
         phoneCall.setOnClickListener(new View.OnClickListener() {
@@ -240,7 +313,6 @@ public class DetailsActivity extends BaseActivity {
             }
         });
     }
-
 
     public void clickOnWebsiteButton(){
         website.setOnClickListener(new View.OnClickListener() {
@@ -266,7 +338,6 @@ public class DetailsActivity extends BaseActivity {
         });
     }
 
-
     public void ConfigFirestoreRecyclerAdapter(){
 
             Query query = firebaseFirestore.collectionGroup("users").whereEqualTo("placeId", placeId);
@@ -284,7 +355,6 @@ public class DetailsActivity extends BaseActivity {
 
 
     }
-
 
     @Override
     public void onStart() {

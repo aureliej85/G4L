@@ -6,6 +6,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.List;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import fr.aureliejosephine.go4lunch.models.User;
 
 
@@ -36,9 +40,9 @@ public class UserRepository {
 
     // --- CREATE USER ---
 
-    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName) {
+    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked) {
 
-        User userToCreate = new User(uid, username, urlPicture, uEmail, placeId, placeName);
+        User userToCreate = new User(uid, username, urlPicture, uEmail, placeId, placeName, restaurantsLiked);
 
         return userCollection.document(uid).set(userToCreate);
     }
@@ -69,6 +73,12 @@ public class UserRepository {
 
     public Task<Void> updateRestaurantChosen(String uid, String placeId, String placeName) {
         return userCollection.document(uid).update("placeId", placeId, "placeName", placeName);
+    }
+
+    public LiveData<String> updateRestaurantLiked(String id, List<String> restaurantsLikedList) {
+        MutableLiveData<String> updateRestaurantLiveData = new MutableLiveData<String>();
+        userCollection.document(id).update("restaurantsLiked", restaurantsLikedList);
+        return  updateRestaurantLiveData;
     }
 
 
