@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -43,6 +44,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.Booking;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
+import fr.aureliejosephine.go4lunch.models.User;
 import fr.aureliejosephine.go4lunch.repositories.BookingRepository;
 import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
@@ -66,6 +68,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     private String dist;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference restaurantRef;
+    private DocumentReference wmRef;
     private Restaurant restaurant;
     private List<String> openHour;
 
@@ -189,26 +192,36 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
             // Nb Users
-           /*restaurantRef = db.collection("restaurants").document(result.getId());
-            restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+
+            //FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+            CollectionReference wmRef = db.collection("users");
+            wmRef.whereEqualTo("placeName", result.getName()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    restaurant = documentSnapshot.toObject(Restaurant.class);
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
 
-                    Log.e("ListAdapter", "onSuccess: before if statement in nbUser");
-                    if(documentSnapshot != null){
-                        if(restaurant.getUsersEatingHere() != null){
-                            int nbUser = restaurant.getUsersEatingHere().size();
-                            String nbUserEatingHere = String.valueOf(nbUser);
-                            nbUserTv.setText(nbUserEatingHere);
-
-                            Log.e("ListAdapter", "onSuccess:  nbUser" + nbUserEatingHere);
-                        } else {
-                            nbUserTv.setText("0");
+                            nbUserTv.setText(Integer.toString(task.getResult().size())  );
                         }
                     }
+                }
+            });
 
+           /*Nombre user 2
+            CollectionReference wmRef = db.collection("users");
+            Query query = wmRef.whereEqualTo("PlaceName", result.getName());
 
+            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Log.d("ListAdapter", document.getId() + " => " + document.getData());
+                            //nbUserTv.setText();
+                        }
+                    } else {
+                        Log.d("listAdapter", "Error getting documents: ", task.getException());
+                    }
                 }
             });*/
 
