@@ -181,12 +181,9 @@ public class DetailsActivity extends BaseActivity {
                                     Toast.makeText(DetailsActivity.this, "Vous avez déjà sélectionné ce restaurant", Toast.LENGTH_SHORT).show();
 
                                 } else {
-                                    removeUserEatingHere();
                                     userViewModel.UpdateRestaurantChosen(getCurrentUser().getUid(), restaurantsResponse.getResult().getPlaceId(), restaurantsResponse.getResult().getName());
                                     Toast.makeText(DetailsActivity.this, "Resto bien selectionné", Toast.LENGTH_SHORT).show();
                                     chosenRestaurantFab.setImageResource(R.drawable.ic_check_circle_green_24dp);
-                                    updateUserEatingHere();
-
                                 }
                             }
                         }).addOnFailureListener(new OnFailureListener() {
@@ -201,32 +198,6 @@ public class DetailsActivity extends BaseActivity {
         });
     }
 
-    public void removeUserEatingHere(){
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-
-            User updateUser= new User(getCurrentUser().getUid(), getCurrentUser().getDisplayName(), getCurrentUser().getEmail());
-
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                User wm = documentSnapshot.toObject(User.class);
-                String currentPlaceId = wm.getPlaceId();
-
-                //newRestaurantRef = db.collection("restaurants").document("placeId");
-                String username = getCurrentUser().getDisplayName();
-                restaurantRef.update("usersEatingHere", FieldValue.arrayRemove(username));
-
-
-
-            }
-        });
-
-    }
-
-    public void updateUserEatingHere(){
-        User updateUser= new User(getCurrentUser().getUid(), getCurrentUser().getDisplayName(), getCurrentUser().getEmail());
-        restaurantRef.update("usersEatingHere", FieldValue.arrayUnion(updateUser));
-
-    }
 
     public void clickOnLikeButton(){
         starLike.setOnClickListener(new View.OnClickListener() {
@@ -268,7 +239,7 @@ public class DetailsActivity extends BaseActivity {
 
     public void heartNotif(){
         detailsViewModel.getDetailsRestaurant(placeId).observe(DetailsActivity.this, detailRestaurant -> {
-            //String nameRestaurantLiked = detailRestaurant.getResult().getName();
+
             Query query = db.collection("users").whereArrayContains("restaurantsLiked", detailRestaurant.getResult().getName());
             likeString = likeTv.getText().toString();
 

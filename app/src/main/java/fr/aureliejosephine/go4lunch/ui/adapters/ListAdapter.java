@@ -2,6 +2,7 @@ package fr.aureliejosephine.go4lunch.ui.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,6 +38,7 @@ import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProviders;
@@ -45,7 +47,11 @@ import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.Booking;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.User;
+import fr.aureliejosephine.go4lunch.models.distance.DistanceApiResponse;
+import fr.aureliejosephine.go4lunch.models.distance.Element;
+import fr.aureliejosephine.go4lunch.models.distance.Row;
 import fr.aureliejosephine.go4lunch.repositories.BookingRepository;
+import fr.aureliejosephine.go4lunch.repositories.DistanceRepository;
 import fr.aureliejosephine.go4lunch.repositories.RestaurantRepository;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.ui.activities.DetailsActivity;
@@ -71,6 +77,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     private DocumentReference wmRef;
     private Restaurant restaurant;
     private List<String> openHour;
+    private DistanceRepository distanceRepository;
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
     public static final int MAX_WIDTH = 300;
@@ -179,123 +186,47 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
            // Location.distanceBetween(talatitude,talongitude,latitude_delendroit, longitude_delendroit, résultats);
             //Vrai résultats=math.round(résultat)
 
-          /* distanceViewModel.getDistance("48.858411,2.912251",result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
-                if (distanceResponse != null) {
+           /*distanceViewModel.getDistance("48.858411,2.912251",result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
+                //if (distanceResponse != null) {
 
                     dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
-                    this.distance.setText(dist);
-                } else{
-                    Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
-                }
+                    Log.e("ListAdapter", "UpdateWithData: " + dist );
+                    distance.setText(dist);
+               // } else{
+                 //   Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
+                //}
 
             });*/
 
 
-            // Nb Users
 
-            //FirebaseFirestore rootRef = FirebaseFirestore.getInstance();
+            // Nb Users
             CollectionReference wmRef = db.collection("users");
             wmRef.whereEqualTo("placeName", result.getName()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {
                         for (DocumentSnapshot document : task.getResult()) {
-
                             nbUserTv.setText(Integer.toString(task.getResult().size())  );
                         }
                     }
                 }
             });
 
-           /*Nombre user 2
-            CollectionReference wmRef = db.collection("users");
-            Query query = wmRef.whereEqualTo("PlaceName", result.getName());
 
-            query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                    if (task.isSuccessful()) {
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            Log.d("ListAdapter", document.getId() + " => " + document.getData());
-                            //nbUserTv.setText();
-                        }
-                    } else {
-                        Log.d("listAdapter", "Error getting documents: ", task.getException());
-                    }
-                }
-            });*/
-
-
-            // Opening hour - Date currentTime = Calendar.getInstance().getTime();
-            /*detailsViewModel.getDetailsRestaurant(result.getId()).observe((FragmentActivity) context, detailsResponse ->{
-
-                Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_WEEK);
-
-                if(detailsResponse.getResult().getOpeningHours() != null){
-
-                    openHour = detailsResponse.getResult().getOpeningHours().getWeekdayText();
-
-                    switch (day) {
-                        case Calendar.SUNDAY:
-                            hoursTv.setText(openHour.get(6));
-                            break;
-                        case Calendar.MONDAY:
-                            hoursTv.setText(openHour.get(0));
-                            break;
-                        case Calendar.TUESDAY:
-                            hoursTv.setText(openHour.get(1));
-                            break;
-                        case Calendar.WEDNESDAY:
-                            hoursTv.setText(openHour.get(2));
-                            break;
-                        case Calendar.THURSDAY:
-                            hoursTv.setText(openHour.get(3));
-                            break;
-                        case Calendar.FRIDAY:
-                            hoursTv.setText(openHour.get(4));
-                            break;
-                        case Calendar.SATURDAY:
-                            hoursTv.setText(openHour.get(5));
-                            break;
-                    }
-
+            //OPEN HOUR
+            if (result.getOpeningHours() != null ){
+                if(result.getOpeningHours().getOpenNow()){
+                    String hour = result.getOpeningHours().getOpenNow().toString();
+                    hoursTv.setText("Open");
+                    Log.e("ListAdapter", "UpdateWithData: " + hour );
                 } else {
-                    hoursTv.setText("nothing here");
+                    hoursTv.setText("Closed now");
+                    hoursTv.setTextColor(Color.RED);
                 }
 
-            });*/
+            }
 
-
-
-            // TEST
-           /*Calendar calendar = Calendar.getInstance();
-            int day = calendar.get(Calendar.DAY_OF_WEEK);
-            String test = result.getOpeningHours().getWeekdayText().get(6);
-                switch (day) {
-                    case Calendar.SUNDAY:
-                        Log.e("ListAdapter", "UpdateWithData: getOpeningHour " + test  );
-                        hoursTv.setText(result.getOpeningHours().getWeekdayText().get(6));
-                        break;
-                    case Calendar.MONDAY:
-                        hoursTv.setText("monday");
-                        break;
-                    case Calendar.TUESDAY:
-                        hoursTv.setText("tuesday");
-                        break;
-                    case Calendar.WEDNESDAY:
-                        hoursTv.setText("wednesday");
-                        break;
-                    case Calendar.THURSDAY:
-                        hoursTv.setText("thursday");
-                        break;
-                    case Calendar.FRIDAY:
-                        hoursTv.setText("friday");
-                        break;
-                    case Calendar.SATURDAY:
-                        hoursTv.setText("saturday");
-                        break;
-            }*/
 
 
             // GET RATING
@@ -307,8 +238,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             }else{
                 ratingBar.setVisibility(View.GONE);
             }
-
-
 
 
         }

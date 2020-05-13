@@ -61,13 +61,15 @@ public class RestaurantRepository {
     }
 
 
-    public  Task<QuerySnapshot> getAllRestaurants(){
-        return getRestaurantsCollection().get();
+    public  LiveData<List<Restaurant>> getAllRestaurants(){
+        MutableLiveData<List<Restaurant>> getAllRestaurantLiveData = new MutableLiveData<List<Restaurant>>();
+        restaurantCollection.get();
+        return getAllRestaurantLiveData;
     }
 
     // --- UPDATE RESTAURANT ---
 
-    public LiveData<Restaurant> updateRestaurant(String id, List<User> userList) {
+    public LiveData <Restaurant> updateRestaurant(String id, List<User> userList) {
         MutableLiveData<Restaurant> updateRestaurantLiveData = new MutableLiveData<Restaurant>();
         restaurantCollection.document(id).update("usersEatingHere", userList);
         return  updateRestaurantLiveData;

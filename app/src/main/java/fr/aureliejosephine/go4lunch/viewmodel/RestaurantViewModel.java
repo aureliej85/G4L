@@ -48,13 +48,8 @@ public class RestaurantViewModel extends AndroidViewModel {
     }
 
 
-    public  void getAllRestaurant(){
-        restaurantRepository.getAllRestaurant().addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Log.i("restaurantViewModel", "onFailure: getAllRestaurant " + e.toString());
-            }
-        });
+    public  LiveData<List<Restaurant>> getAllRestaurant(){
+        return restaurantRepository.getAllRestaurants();
     }
 
 

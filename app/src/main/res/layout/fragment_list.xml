@@ -7,6 +7,9 @@
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
+    <include
+        layout="@layout/progress_bar"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_list"
         android:layout_width="match_parent"

@@ -22,9 +22,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -36,6 +38,8 @@ import fr.aureliejosephine.go4lunch.R;
 import fr.aureliejosephine.go4lunch.models.Restaurant;
 import fr.aureliejosephine.go4lunch.models.details_places.DetailsResult;
 import fr.aureliejosephine.go4lunch.ui.adapters.ListAdapter;
+import fr.aureliejosephine.go4lunch.viewmodel.DetailsViewModel;
+import fr.aureliejosephine.go4lunch.viewmodel.DistanceViewModel;
 import fr.aureliejosephine.go4lunch.viewmodel.ListViewModel;
 import fr.aureliejosephine.go4lunch.viewmodel.RestaurantViewModel;
 
@@ -49,6 +53,7 @@ public class ListFragment extends Fragment {
     private ListViewModel listViewModel;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private int REQUEST_CODE_LOCATION = 44;
+    private ConstraintLayout progressBar;
 
     public ListFragment(){ }
 
@@ -60,6 +65,7 @@ public class ListFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_list, container, false);
 
         recyclerView = rootView.findViewById(R.id.recycler_list);
+        progressBar = rootView.findViewById(R.id.my_progress_bar);
 
         initialization();
         getRestaurants();
@@ -76,6 +82,7 @@ public class ListFragment extends Fragment {
     private void initialization() {
         Log.i("ListFragment", "initialization: ");
 
+
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
         recyclerView.setHasFixedSize(true);
@@ -86,7 +93,9 @@ public class ListFragment extends Fragment {
                 DividerItemDecoration.VERTICAL));
 
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
+        progressBar.setVisibility(View.VISIBLE);
     }
+
 
 
     private void getRestaurants() {
@@ -113,22 +122,26 @@ public class ListFragment extends Fragment {
                             double latitude = locationResult.getLocations().get(latestLocationIndex).getLatitude();
                             double longitude = locationResult.getLocations().get(latestLocationIndex).getLongitude();
 
-
                             // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
                             listViewModel.getRestaurants(String.format("%s,%s",latitude,longitude)).observe(getActivity(), restaurantsResponse -> {
-                            if (restaurantsResponse != null) {
+                                if (restaurantsResponse != null) {
+                                List<DetailsResult> restaurants = restaurantsResponse.getResults();
+                                restaurantsList.addAll(restaurants);
+                                adapter.notifyDataSetChanged();
+                                }
+                            });
 
-                            List<DetailsResult> restaurants = restaurantsResponse.getResults();
-                            restaurantsList.addAll(restaurants);
-                            adapter.notifyDataSetChanged();
-                            }
+                            progressBar.setVisibility(View.INVISIBLE);
 
-
-                             });
                         } }},
                         Looper.getMainLooper() );
 
                     }
+
+
+
+
+
 
 
 

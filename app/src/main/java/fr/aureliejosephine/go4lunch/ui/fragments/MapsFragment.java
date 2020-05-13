@@ -45,9 +45,11 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompletePrediction;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -102,6 +104,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
     private DocumentReference restaurantRef;
     private Restaurant restaurant;
+    private String userPosition;
 
 
 
@@ -116,7 +119,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         CheckGooglePlayServices();
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         restaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-        //getMarkers();
+        getMarkers();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
 
@@ -160,7 +163,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
             @Override
             public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
                 getDeviceLocation();
-                getMarkers();
+                //getMarkers();
             }
         });
         task.addOnFailureListener(getActivity(), new OnFailureListener() {
@@ -179,9 +182,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
 
-    private void getMarkers(){
+   private void getMarkers(){
         // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
         Log.e("ListFragment", "onSuccess: " );
+
 
         listViewModel.getRestaurants("48.858411,2.912251").observe(getActivity(), restaurantsResponse -> {
             if (restaurantsResponse != null) {
@@ -193,11 +197,10 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                 }
             }
         });
-
     }
 
 
-    protected /*Marker*/ void  createMarker(double latitude, double longitude, String title) {
+    protected void  createMarker(double latitude, double longitude, String title) {
         restaurantRef = db.collection("restaurants").document("usersEatingHere");
         restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -221,14 +224,24 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                     }
             }
         });
-
-        /*return mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .anchor(0.5f, 0.5f)
-                .title(title)
-                //.snippet(snippet)
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));*/
     }
+
+    /*protected void  createMarker(double latitude, double longitude, String title) {
+
+        CollectionReference wmRef = db.collection("users");
+        wmRef.document("placeName").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    for (DocumentSnapshot document : task.getResult()) {
+
+                        nbUserTv.setText(Integer.toString(task.getResult().size())  );
+                    }
+                }
+            }
+        });*/
+
+    //}
 
 
     @Override
@@ -279,6 +292,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                                             latitude = mLastKnownLocation.getLatitude();
                                             longitude = mLastKnownLocation.getLongitude();
                                             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
+
+                                            userPosition = latitude + "," + longitude;
 
                                             mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
                                         }
