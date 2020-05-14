@@ -25,8 +25,8 @@ public class RestaurantViewModel extends AndroidViewModel {
         this.restaurantRepository = new RestaurantRepository();
     }
 
-    public void CreateRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, String placeId, List<User> workmatesHere){
-        restaurantRepository.createRestaurant(id, name, urlPhoto, address, phoneNumber, website, placeId, workmatesHere).addOnFailureListener(new OnFailureListener() {
+    public void CreateRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, String placeId, List<User> workmatesHere, Double latitude, Double longitude){
+        restaurantRepository.createRestaurant(id, name, urlPhoto, address, phoneNumber, website, placeId, workmatesHere, latitude, longitude).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
                 Log.i("RestaurantViewModel", "onFailure: createRestaurant " + e.toString());

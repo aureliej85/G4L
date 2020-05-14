@@ -40,9 +40,9 @@ public class UserRepository {
 
     // --- CREATE USER ---
 
-    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked) {
+    public Task<Void> createUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked, Double userLat, Double userLgt) {
 
-        User userToCreate = new User(uid, username, urlPicture, uEmail, placeId, placeName, restaurantsLiked);
+        User userToCreate = new User(uid, username, urlPicture, uEmail, placeId, placeName, restaurantsLiked, userLat, userLgt);
 
         return userCollection.document(uid).set(userToCreate);
     }

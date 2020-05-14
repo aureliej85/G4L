@@ -43,9 +43,9 @@ public class RestaurantRepository {
 
     // --- CREATE RESTAURANT ---
 
-    public Task<Void> createRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, String placeId, List<User> workmatesHere) {
+    public Task<Void> createRestaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String website, String placeId, List<User> workmatesHere, Double latitude, Double longitude) {
 
-        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, address, phoneNumber, website, placeId,  workmatesHere);
+        Restaurant restaurantToCreate = new Restaurant(id, name, urlPhoto, address, phoneNumber, website, placeId,  workmatesHere, latitude, longitude);
 
         return restaurantCollection.document(id).set(restaurantToCreate);
     }

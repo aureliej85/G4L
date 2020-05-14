@@ -13,7 +13,7 @@ public class Restaurant {
     private Double longitude;
     private String address;
     private int openingHours;
-    private int distance;
+    private Integer distance;
     private String urlPhoto;
     private int rating;
     private String phoneNumber;
@@ -24,7 +24,7 @@ public class Restaurant {
     public Restaurant(){
     }
 
-    public Restaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String webSite, String placeId, List<User> usersEatingHere){
+    public Restaurant(String id, String name, String urlPhoto, String address, String phoneNumber, String webSite, String placeId, List<User> usersEatingHere, Double latitude, Double longitude){
         this.uid = id;
         this.name = name;
         this.urlPhoto = urlPhoto;
@@ -33,6 +33,8 @@ public class Restaurant {
         this.webSite = webSite;
         this.placeId = placeId;
         this.usersEatingHere = usersEatingHere;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     public Restaurant(String uid, String name, Double latitude, Double longitude, @Nullable String address, @Nullable int openingHours, @Nullable String urlPhoto, @Nullable int rating, String phoneNumber, String webSite) {
@@ -97,11 +99,11 @@ public class Restaurant {
         this.openingHours = openingHours;
     }
 
-    public int getDistance() {
+    public Integer getDistance() {
         return distance;
     }
 
-    public void setDistance(int distance) {
+    public void setDistance(Integer distance) {
         this.distance = distance;
     }
 

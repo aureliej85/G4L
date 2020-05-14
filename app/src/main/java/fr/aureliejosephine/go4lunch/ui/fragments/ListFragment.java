@@ -16,6 +16,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken;
@@ -25,6 +26,7 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -70,6 +72,7 @@ public class ListFragment extends Fragment {
     private List<DetailsResult> restaurantListFromPlaces;
     private List<DetailsResult> restaurantListAutocomplete = new ArrayList<>();
     private List<String> placeIdList = new ArrayList<>();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
 
     public ListFragment(){ }
 
@@ -147,7 +150,30 @@ public class ListFragment extends Fragment {
                                 restaurantsList.addAll(restaurants);
                                 adapter.notifyDataSetChanged();
                                 }
+
                             });
+
+
+                            // UPDATE LATITUDE AND LONGITUDE
+                            DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+                            userRef
+                                    .update("latitude", latitude, "longitude", longitude)
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            Log.d("ListFragment", "DocumentSnapshot successfully updated!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w("ListFragment", "Error updating document", e);
+                                        }
+                                    });
+
+
+
+
 
                             progressBar.setVisibility(View.INVISIBLE);
 

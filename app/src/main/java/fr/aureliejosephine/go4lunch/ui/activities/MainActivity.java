@@ -378,7 +378,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
             String uid = this.getCurrentUser().getUid();
             String uEmail = this.getCurrentUser().getEmail();
 
-            userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, null, null);
+            userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, null, null, null, null);
 
         }
     }

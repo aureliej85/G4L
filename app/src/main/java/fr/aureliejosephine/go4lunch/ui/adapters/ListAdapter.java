@@ -78,6 +78,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     private Restaurant restaurant;
     private List<String> openHour;
     private DistanceRepository distanceRepository;
+    private User user;
+    Double lat;
+    Double lgt;
+    String userPosition;
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
     public static final int MAX_WIDTH = 300;
@@ -182,8 +186,33 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
             // Distance - VIEWMODEL
+           wmRef = db.collection("users").document(getCurrentUser().getUid());
+            wmRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    user = documentSnapshot.toObject(User.class);
 
-           distanceViewModel.getDistance("48.858411,2.912251","place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
+
+                        lat = user.getLatitude();
+                        lgt = user.getLongitude();
+                        userPosition = lat + "," + lgt;
+
+                        distanceViewModel.getDistance(userPosition,"place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
+                            if (distanceResponse != null) {
+                                dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
+                                Log.e("ListAdapter", "UpdateWithData: " + dist );
+                                distance.setText(dist);
+
+                            }
+
+                        });
+
+
+
+                }
+            });
+
+           /*distanceViewModel.getDistance("48.858411,2.912251","place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
                 if (distanceResponse != null) {
 
                     dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
@@ -193,7 +222,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                    Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
                 }
 
-            });
+            });*/
 
 
 
@@ -257,7 +286,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                     if(!documentSnapshot.exists())
-                    restaurantViewModel.CreateRestaurant(result.getId(), result.getName(), url, address, phoneNumber, website, placeId, null);
+                    restaurantViewModel.CreateRestaurant(result.getId(), result.getName(), url, address, phoneNumber, website, placeId, null, null, null);
                 }
             });
 

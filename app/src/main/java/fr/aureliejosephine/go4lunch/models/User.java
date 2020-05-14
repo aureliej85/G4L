@@ -17,6 +17,8 @@ public class User {
     private String placeId;
     private String placeName;
     private List<String> restaurantsLiked;
+    private Double latitude;
+    private Double longitude;
 
     public User() { }
 
@@ -33,7 +35,7 @@ public class User {
         this.email = uEmail;
     }
 
-    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked) {
+    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked, Double latitude, Double longitude) {
         this.uid = uid;
         this.username = username;
         this.picture = picture;
@@ -41,6 +43,8 @@ public class User {
         this.placeId = placeId;
         this.placeName = placeName;
         this.restaurantsLiked = restaurantsLiked;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     // --- GETTERS ---
@@ -59,6 +63,12 @@ public class User {
     public List<String> getRestaurantsLiked() {
         return restaurantsLiked;
     }
+    public Double getLatitude() {
+        return latitude;
+    }
+    public Double getLongitude() {
+        return longitude;
+    }
 
     // --- SETTERS ---
     public void setUsername(String username) { this.username = username; }
@@ -75,5 +85,11 @@ public class User {
     }
     public void setRestaurantsLiked(List<String> restaurantsLiked) {
         this.restaurantsLiked = restaurantsLiked;
+    }
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
     }
 }

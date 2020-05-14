@@ -27,8 +27,8 @@ public class UserViewModel extends AndroidViewModel {
 
     // -- CREATE USER IN FIRESTORE --
 
-     public void CreateUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked){
-        userRepository.createUser(uid, username, urlPicture, uEmail, placeId, placeName, restaurantsLiked).addOnFailureListener(new OnFailureListener() {
+     public void CreateUser(String uid, String username, String urlPicture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked, Double userLat, Double userLgt){
+        userRepository.createUser(uid, username, urlPicture, uEmail, placeId, placeName, restaurantsLiked, userLat, userLgt).addOnFailureListener(new OnFailureListener() {
              @Override
              public void onFailure(@NonNull Exception e) {
                  Log.i("UserViewModel", "onFailure: " + e.toString());
