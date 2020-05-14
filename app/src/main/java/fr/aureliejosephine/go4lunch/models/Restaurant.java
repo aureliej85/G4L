@@ -13,7 +13,7 @@ public class Restaurant {
     private Double longitude;
     private String address;
     private int openingHours;
-    private Integer distance;
+    private int distance;
     private String urlPhoto;
     private int rating;
     private String phoneNumber;
@@ -97,11 +97,11 @@ public class Restaurant {
         this.openingHours = openingHours;
     }
 
-    public Integer getDistance() {
+    public int getDistance() {
         return distance;
     }
 
-    public void setDistance(Integer distance) {
+    public void setDistance(int distance) {
         this.distance = distance;
     }
 

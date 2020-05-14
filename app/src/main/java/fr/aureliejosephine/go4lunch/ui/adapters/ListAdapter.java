@@ -183,20 +183,17 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
             // Distance - VIEWMODEL
 
-           // Location.distanceBetween(talatitude,talongitude,latitude_delendroit, longitude_delendroit, résultats);
-            //Vrai résultats=math.round(résultat)
-
-           /*distanceViewModel.getDistance("48.858411,2.912251",result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
-                //if (distanceResponse != null) {
+           distanceViewModel.getDistance("48.858411,2.912251","place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
+                if (distanceResponse != null) {
 
                     dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
                     Log.e("ListAdapter", "UpdateWithData: " + dist );
                     distance.setText(dist);
-               // } else{
-                 //   Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
-                //}
+                } else{
+                   Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
+                }
 
-            });*/
+            });
 
 
 

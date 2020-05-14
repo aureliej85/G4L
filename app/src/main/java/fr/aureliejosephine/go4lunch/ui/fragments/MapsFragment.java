@@ -200,6 +200,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
 
+
     protected void  createMarker(double latitude, double longitude, String title) {
         restaurantRef = db.collection("restaurants").document("usersEatingHere");
         restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -226,22 +227,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         });
     }
 
-    /*protected void  createMarker(double latitude, double longitude, String title) {
-
-        CollectionReference wmRef = db.collection("users");
-        wmRef.document("placeName").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    for (DocumentSnapshot document : task.getResult()) {
-
-                        nbUserTv.setText(Integer.toString(task.getResult().size())  );
-                    }
-                }
-            }
-        });*/
-
-    //}
 
 
     @Override
