@@ -106,6 +106,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private Restaurant restaurant;
     private String userPosition;
     private User user;
+    private double lat;
+    private double lgt;
 
 
 
@@ -186,30 +188,39 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
    private void getMarkers(){
         // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
         Log.e("ListFragment", "onSuccess: " );
+       userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+           @Override
+           public void onSuccess(DocumentSnapshot documentSnapshot) {
+               user = documentSnapshot.toObject(User.class);
 
-        listViewModel.getRestaurants("48.858411,2.912251").observe(getActivity(), restaurantsResponse -> {
-            if (restaurantsResponse != null) {
-                Log.e("ListFragment", "onSuccess: " );
-                List<DetailsResult> restaurants = restaurantsResponse.getResults();
+               lat = user.getLatitude();
+               lgt = user.getLongitude();
+               userPosition = lat + "," + lgt;
 
-                for(int i = 0;i < restaurants.size(); i++){
-                    createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName());
-                }
-            }
-        });
+               listViewModel.getRestaurants(userPosition).observe(getActivity(), restaurantsResponse -> {
+                   if (restaurantsResponse != null) {
+                       Log.e("ListFragment", "onSuccess: " );
+                       List<DetailsResult> restaurants = restaurantsResponse.getResults();
 
+                       for(int i = 0;i < restaurants.size(); i++){
+                           createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName());
+                       }
+                   }
+               });
+           }
+       });
     }
 
 
 
     protected void  createMarker(double latitude, double longitude, String title) {
-        restaurantRef = db.collection("restaurants").document("usersEatingHere");
-        restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                restaurant = documentSnapshot.toObject(Restaurant.class);
+                user = documentSnapshot.toObject(User.class);
 
-                if(documentSnapshot == null){
+                if(user.getPlaceName().contains(title)) {
+
                         mMap.addMarker(new MarkerOptions()
                                 .position(new LatLng(latitude, longitude))
                                 .anchor(0.5f, 0.5f)
