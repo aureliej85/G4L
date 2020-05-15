@@ -171,10 +171,6 @@ public class ListFragment extends Fragment {
                                         }
                                     });
 
-
-
-
-
                             progressBar.setVisibility(View.INVISIBLE);
 
                         } }},
@@ -214,117 +210,6 @@ public class ListFragment extends Fragment {
     protected FirebaseUser getCurrentUser(){ return FirebaseAuth.getInstance().getCurrentUser(); }
 
     protected Boolean isCurrentUserLogged(){ return (this.getCurrentUser() != null); }
-
-
-    // ---------------
-    // -- AUTOCOMPLETE
-    // ---------------
-
-    private RectangularBounds getRectangularBounds(LatLng currentLatLng) {
-        double temp = 0.01;
-        LatLng latLng1 = new LatLng(currentLatLng.latitude-temp, currentLatLng.longitude-temp);
-        LatLng latLng2 = new LatLng(currentLatLng.latitude+temp, currentLatLng.longitude+temp);
-        return RectangularBounds.newInstance(latLng1, latLng2);
-    }
-
-
-    public void autocompleteSearch(String input) {
-        PlacesClient placesClient = Places.createClient(Objects.requireNonNull(getContext()));
-        AutocompleteSessionToken sessionToken = AutocompleteSessionToken.newInstance();
-        LatLng currentLatLng = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-
-        FindAutocompletePredictionsRequest request = FindAutocompletePredictionsRequest.builder()
-                .setLocationRestriction(getRectangularBounds(currentLatLng))
-                .setOrigin(currentLatLng)
-                .setTypeFilter(TypeFilter.ESTABLISHMENT)
-                .setSessionToken(sessionToken)
-                .setQuery(input)
-                .build();
-
-        placesClient.findAutocompletePredictions(request).addOnSuccessListener(findAutocompletePredictionsResponse ->
-        {
-            int size = findAutocompletePredictionsResponse.getAutocompletePredictions().size();
-            for (int i = 0; i < size; i ++)
-            {
-                String placeId = findAutocompletePredictionsResponse.getAutocompletePredictions().get(i).getPlaceId();
-                //----------------- V2 WITHOUT WIDGET NEW REQUEST TODO
-                placeIdList.add(placeId);
-
-                //----------------- V1 WITH WIDGET IN LIST TODO
-                /*Restaurant toCompare = new Restaurant();
-                toCompare.setPlaceId(placeId);
-                if (restaurantListFromPlaces.contains(toCompare))
-                {
-                    int index = restaurantListFromPlaces.indexOf(toCompare);
-                    restaurantListAutocomplete.add(restaurantListFromPlaces.get(index));
-                }*/
-            }
-            getRestaurantFromPlaces();
-
-            //----------------- V1 WITH WIDGET IN LIST TODO
-            /*restaurantListFromPlaces = restaurantListAutocomplete;
-            adapter.updateList(restaurantListFromPlaces);*/
-        });
-    }
-
-    //----------------- V2 WITHOUT WIDGET NEW REQUEST TODO
-    private void getRestaurantFromPlaces()
-    {
-        String key = getResources().getString(R.string.google_maps_key);
-
-        for (int i = 0; i < placeIdList.size(); i ++)
-        {
-            String placeId = placeIdList.get(i);
-
-
-            detailsViewModel.getDetailsRestaurant(placeId).observe(this, restaurantDetails ->{
-                if (!restaurantDetails.getResult().getName().equals("NO_RESTAURANT"))
-                {
-                    if (!restaurantListAutocomplete.contains(restaurantDetails.getResult()))
-                    {
-                        restaurantListAutocomplete.add(restaurantDetails.getResult());
-                        restaurantListFromPlaces = restaurantListAutocomplete;
-                        getRestaurants();
-                        //Utils.updateDistanceToCurrentLocation(currentLocation, restaurantListFromPlaces);
-                    }
-                }
-            });
-
-
-
-            /*this.viewModelGo4Lunch.getRestaurantDetailPlacesMutableLiveData(placeId, key)
-                    .observe(this, restaurantObservable -> {
-                        disposable = restaurantObservable.subscribeWith(new DisposableObserver<Restaurant>() {
-                            @Override
-                            public void onNext(Restaurant restaurant)
-                            {
-                                if (!restaurant.getName().equals("NO_RESTAURANT"))
-                                {
-                                    if (!restaurantListAutocomplete.contains(restaurant))
-                                    {
-                                        restaurantListAutocomplete.add(restaurant);
-                                        restaurantListFromPlaces = restaurantListAutocomplete;
-                                        getRestaurants();
-                                        Utils.updateDistanceToCurrentLocation(currentLocation, restaurantListFromPlaces);
-                                    }
-                                }
-                            }
-                            @Override
-                            public void onError(Throwable e) {}
-                            @Override
-                            public void onComplete() {}
-                        });
-                    });*/
-
-
-
-
-
-
-        }
-
-    }
-
 
 
 }

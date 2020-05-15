@@ -192,7 +192,6 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
                     user = documentSnapshot.toObject(User.class);
 
-
                         lat = user.getLatitude();
                         lgt = user.getLongitude();
                         userPosition = lat + "," + lgt;
@@ -202,27 +201,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                                 dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
                                 Log.e("ListAdapter", "UpdateWithData: " + dist );
                                 distance.setText(dist);
-
                             }
 
                         });
-
-
-
                 }
             });
-
-           /*distanceViewModel.getDistance("48.858411,2.912251","place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
-                if (distanceResponse != null) {
-
-                    dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
-                    Log.e("ListAdapter", "UpdateWithData: " + dist );
-                    distance.setText(dist);
-                } else{
-                   Toast.makeText(context, "Pas de distance", Toast.LENGTH_SHORT).show();
-                }
-
-            });*/
 
 
 
@@ -278,6 +261,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 String phoneNumber = result.getFormattedPhoneNumber();
                 String website = result.getWebsite();
                 String placeId = result.getPlaceId();
+                Double lat = result.getGeometry().getLocation().getLat();
+                Double lgt = result.getGeometry().getLocation().getLng();
 
             restaurantRef = db.collection("restaurants").document(result.getId());
 
@@ -286,7 +271,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
 
                     if(!documentSnapshot.exists())
-                    restaurantViewModel.CreateRestaurant(result.getId(), result.getName(), url, address, phoneNumber, website, placeId, null, null, null);
+                    restaurantViewModel.CreateRestaurant(result.getId(), result.getName(), url, address, phoneNumber, website, placeId, null, lat, lgt);
                 }
             });
 

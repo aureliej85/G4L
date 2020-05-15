@@ -105,6 +105,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private DocumentReference restaurantRef;
     private Restaurant restaurant;
     private String userPosition;
+    private User user;
 
 
 
@@ -186,7 +187,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
         Log.e("ListFragment", "onSuccess: " );
 
-
         listViewModel.getRestaurants("48.858411,2.912251").observe(getActivity(), restaurantsResponse -> {
             if (restaurantsResponse != null) {
                 Log.e("ListFragment", "onSuccess: " );
@@ -197,6 +197,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                 }
             }
         });
+
     }
 
 
