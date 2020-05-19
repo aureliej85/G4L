@@ -17,8 +17,8 @@ public class User {
     private String placeId;
     private String placeName;
     private List<String> restaurantsLiked;
-    private Double latitude;
-    private Double longitude;
+    private double latitude;
+    private double longitude;
 
     public User() { }
 
@@ -63,10 +63,10 @@ public class User {
     public List<String> getRestaurantsLiked() {
         return restaurantsLiked;
     }
-    public Double getLatitude() {
+    public double getLatitude() {
         return latitude;
     }
-    public Double getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -86,10 +86,10 @@ public class User {
     public void setRestaurantsLiked(List<String> restaurantsLiked) {
         this.restaurantsLiked = restaurantsLiked;
     }
-    public void setLatitude(Double latitude) {
+    public void setLatitude(double latitude) {
         this.latitude = latitude;
     }
-    public void setLongitude(Double longitude) {
+    public void setLongitude(double longitude) {
         this.longitude = longitude;
     }
 }

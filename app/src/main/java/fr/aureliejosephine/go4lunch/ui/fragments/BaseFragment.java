@@ -23,7 +23,7 @@ public class BaseFragment extends Fragment {
 
     private int PERMISSION_ID = 44;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+    private DocumentReference userRef = db.collection("users").document();
 
 
 

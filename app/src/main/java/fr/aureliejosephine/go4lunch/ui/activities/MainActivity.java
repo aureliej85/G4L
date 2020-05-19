@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -17,12 +18,20 @@ import fr.aureliejosephine.go4lunch.ui.fragments.SettingsFragment;
 import fr.aureliejosephine.go4lunch.ui.fragments.WorkmatesFragment;
 import fr.aureliejosephine.go4lunch.viewmodel.UserViewModel;
 
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
+
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Looper;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -71,6 +80,9 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     private DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
     ArrayList<DetailsResult> restaurantsList;
     private DetailsResult result;
+    private int REQUEST_CODE_LOCATION = 44;
+    private double latitude;
+    private double longitude;
 
 
 
@@ -237,6 +249,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                                 Arrays.asList(
                                         new AuthUI.IdpConfig.FacebookBuilder().build(), //GOOGLE
                                         new AuthUI.IdpConfig.GoogleBuilder().build(),
+                                        new AuthUI.IdpConfig.TwitterBuilder().build(),
                                         new AuthUI.IdpConfig.EmailBuilder().build())) //EMAIL)) // FACEBOOK)) // SUPPORT GOOGLE))
                         .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.logo_g4l)
@@ -362,14 +375,14 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         if (task.getResult().exists()){
                                 System.out.println("User already in Firestore");
                         } else {
-                            createUserInFirestore();
+                            createUserWithLocation();
                         }
                     }
                 });
     }
 
 
-    private void createUserInFirestore(){
+    /*private void createUserInFirestore(){
 
         if (this.getCurrentUser() != null){
 
@@ -380,6 +393,73 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
             userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, null, null, null, null);
 
+        }
+    }*/
+
+
+    private void createUserWithLocation() {
+        Log.i("ListFragment", "getRestaurants: ");
+
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationServices.getFusedLocationProviderClient(this)
+                .requestLocationUpdates(locationRequest, new LocationCallback(){
+
+                            @Override
+                            public void onLocationResult(LocationResult locationResult){
+                                super.onLocationResult(locationResult);
+
+                                LocationServices.getFusedLocationProviderClient(getApplication())
+                                        .removeLocationUpdates(this);
+
+                                if(locationResult != null && locationResult.getLocations().size() > 0){
+
+                                    int latestLocationIndex = locationResult.getLocations().size() -1;
+                                    latitude = locationResult.getLocations().get(latestLocationIndex).getLatitude();
+                                    longitude = locationResult.getLocations().get(latestLocationIndex).getLongitude();
+
+                                    // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
+
+                                    if (getCurrentUser() != null){
+
+                                        String urlPicture = (getCurrentUser().getPhotoUrl() != null) ? getCurrentUser().getPhotoUrl().toString() : null;
+                                        String username = getCurrentUser().getDisplayName();
+                                        String uid = getCurrentUser().getUid();
+                                        String uEmail = getCurrentUser().getEmail();
+
+                                        userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, "none", null, latitude, longitude);
+
+                                    }
+
+
+
+                                } }},
+                        Looper.getMainLooper() );
+
+    }
+
+
+    // ---------------
+    // -- PERMISSIONS
+    // ---------------
+
+
+    public void CheckPermission(){
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String [] {
+                    Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_LOCATION);
+        }}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_LOCATION) {
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                createUserWithLocation();
+            }
         }
     }
 

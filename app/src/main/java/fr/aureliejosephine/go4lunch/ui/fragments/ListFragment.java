@@ -155,7 +155,7 @@ public class ListFragment extends Fragment {
 
 
                             // UPDATE LATITUDE AND LONGITUDE
-                            DocumentReference userRef = db.collection("users").document(getCurrentUser().getUid());
+                            DocumentReference userRef = db.collection("users").document();
                             userRef
                                     .update("latitude", latitude, "longitude", longitude)
                                     .addOnSuccessListener(new OnSuccessListener<Void>() {

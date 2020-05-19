@@ -79,8 +79,8 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
     private List<String> openHour;
     private DistanceRepository distanceRepository;
     private User user;
-    Double lat;
-    Double lgt;
+    private double lat;
+    private double lgt;
     String userPosition;
 
     public static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/photo";
@@ -190,20 +190,29 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             wmRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    user = documentSnapshot.toObject(User.class);
 
-                        lat = user.getLatitude();
-                        lgt = user.getLongitude();
-                        userPosition = lat + "," + lgt;
+                        if(documentSnapshot != null){
+                            user = documentSnapshot.toObject(User.class);
 
-                        distanceViewModel.getDistance(userPosition,"place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
-                            if (distanceResponse != null) {
-                                dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
-                                Log.e("ListAdapter", "UpdateWithData: " + dist );
-                                distance.setText(dist);
+                            if (user != null){
+                                lat = user.getLatitude();
+                                lgt = user.getLongitude();
+                                userPosition = lat + "," + lgt;
+
+                                distanceViewModel.getDistance(userPosition,"place_id:" + result.getPlaceId()).observe((FragmentActivity) context, distanceResponse -> {
+                                    if (distanceResponse != null) {
+                                        dist = distanceResponse.getRows().get(0).getElements().get(0).getDistance().getText();
+                                        Log.e("ListAdapter", "UpdateWithData: " + dist );
+                                        distance.setText(dist);
+                                    }
+
+                                });
+                            } else {
+                                distance.setVisibility(View.GONE);
                             }
 
-                        });
+                        }
+
                 }
             });
 

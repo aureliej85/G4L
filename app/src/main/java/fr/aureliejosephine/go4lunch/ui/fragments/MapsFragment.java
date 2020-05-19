@@ -122,7 +122,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         CheckGooglePlayServices();
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         restaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-        getMarkers();
+       // getMarkers();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
 
@@ -185,7 +185,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     }
 
 
-   private void getMarkers(){
+  /* private void getMarkers(){
         // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
         Log.e("ListFragment", "onSuccess: " );
        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -193,11 +193,11 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
            public void onSuccess(DocumentSnapshot documentSnapshot) {
                user = documentSnapshot.toObject(User.class);
 
-               lat = user.getLatitude();
-               lgt = user.getLongitude();
-               userPosition = lat + "," + lgt;
+               //lat = user.getLatitude();
+               //lgt = user.getLongitude();
+               //userPosition = lat + "," + lgt;
 
-               listViewModel.getRestaurants(userPosition).observe(getActivity(), restaurantsResponse -> {
+               listViewModel.getRestaurants("48.858411,2.912251").observe(getActivity(), restaurantsResponse -> {
                    if (restaurantsResponse != null) {
                        Log.e("ListFragment", "onSuccess: " );
                        List<DetailsResult> restaurants = restaurantsResponse.getResults();
@@ -209,11 +209,11 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                });
            }
        });
-    }
+    }*/
 
 
 
-    protected void  createMarker(double latitude, double longitude, String title) {
+   /* protected void  createMarker(double latitude, double longitude, String title) {
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -237,7 +237,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                     }
             }
         });
-    }
+    }*/
 
 
 
