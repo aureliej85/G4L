@@ -108,6 +108,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private User user;
     private double lat;
     private double lgt;
+    private int REQUEST_CODE_LOCATION = 45;
 
 
 
@@ -123,6 +124,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         restaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
        // getMarkers();
+        getMarkersWithPosition();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
 
@@ -213,7 +215,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
 
 
 
-   /* protected void  createMarker(double latitude, double longitude, String title) {
+   protected void  createMarker(double latitude, double longitude, String title) {
+
         userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -237,7 +240,88 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                     }
             }
         });
-    }*/
+    }
+
+
+    private void getMarkersWithPosition() {
+        Log.i("ListFragment", "getRestaurants: ");
+
+        LocationRequest locationRequest = new LocationRequest();
+        locationRequest.setInterval(10000);
+        locationRequest.setFastestInterval(3000);
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+
+        LocationServices.getFusedLocationProviderClient(getActivity())
+                .requestLocationUpdates(locationRequest, new LocationCallback(){
+
+                            @Override
+                            public void onLocationResult(LocationResult locationResult){
+                                super.onLocationResult(locationResult);
+
+                                LocationServices.getFusedLocationProviderClient(getActivity())
+                                        .removeLocationUpdates(this);
+
+                                if(locationResult != null && locationResult.getLocations().size() > 0){
+
+                                    int latestLocationIndex = locationResult.getLocations().size() -1;
+                                    lat = locationResult.getLocations().get(latestLocationIndex).getLatitude();
+                                    lgt = locationResult.getLocations().get(latestLocationIndex).getLongitude();
+                                    userPosition = lat + "," + lgt;
+
+                                    // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
+                                    Log.e("ListFragment", "onSuccess: " );
+                                    userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                        @Override
+                                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                            user = documentSnapshot.toObject(User.class);
+
+                                            //lat = user.getLatitude();
+                                            //lgt = user.getLongitude();
+                                            //userPosition = lat + "," + lgt;
+
+                                            listViewModel.getRestaurants(userPosition).observe(getActivity(), restaurantsResponse -> {
+                                                if (restaurantsResponse != null) {
+                                                    Log.e("ListFragment", "onSuccess: " );
+                                                    List<DetailsResult> restaurants = restaurantsResponse.getResults();
+
+                                                    for(int i = 0;i < restaurants.size(); i++){
+                                                        createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName());
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    });
+
+                                } }},
+                        Looper.getMainLooper() );
+
+    }
+
+
+    // ---------------
+    // -- PERMISSIONS
+    // ---------------
+
+
+    public void CheckPermission(){
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(getActivity(), new String [] {
+                    Manifest.permission.ACCESS_FINE_LOCATION }, REQUEST_CODE_LOCATION);
+        }}
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_CODE_LOCATION) {
+            if(grantResults.length>0 && grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                getMarkersWithPosition();
+            }
+        }
+    }
+
+
+
+
 
 
 
