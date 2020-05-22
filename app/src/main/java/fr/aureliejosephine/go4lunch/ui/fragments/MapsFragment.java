@@ -49,6 +49,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
@@ -217,7 +218,59 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
 
    protected void  createMarker(double latitude, double longitude, String title) {
 
-        userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+       CollectionReference wmRef = db.collection("users");
+       wmRef.whereEqualTo("placeName", title).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+           @Override
+           public void onComplete(@NonNull Task<QuerySnapshot> task) {
+               if(task.isSuccessful()){
+
+                   mMap.addMarker(new MarkerOptions()
+                           .position(new LatLng(latitude, longitude))
+                           //.anchor(0.5f, 0.5f)
+                           .title(title)
+                           //.snippet(snippet)
+                           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+
+                   for (QueryDocumentSnapshot document : task.getResult()) {
+                       Log.e("MapFragment", document.getId() + " => " + document.getData());
+
+                            //if(document.getData().get("placeName").equals(title)){
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(latitude, longitude))
+                                        //.anchor(0.5f, 0.5f)
+                                        .title(title)
+                                        //.snippet(snippet)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                            /*} else {
+                                mMap.addMarker(new MarkerOptions()
+                                        .position(new LatLng(latitude, longitude))
+                                        //.anchor(0.5f, 0.5f)
+                                        .title(title)
+                                        //.snippet(snippet)
+                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                            }*/
+
+
+                   }
+
+
+
+               } else {
+                   mMap.addMarker(new MarkerOptions()
+                           .position(new LatLng(latitude, longitude))
+                           //.anchor(0.5f, 0.5f)
+                           .title(title)
+                           //.snippet(snippet)
+                           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+               }
+
+           }
+       });
+
+
+
+
+       /*userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 user = documentSnapshot.toObject(User.class);
@@ -239,7 +292,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                     }
             }
-        });
+        });*/
     }
 
 
