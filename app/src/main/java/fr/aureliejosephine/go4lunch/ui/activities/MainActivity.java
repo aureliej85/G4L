@@ -137,7 +137,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.search_menu, menu);
+        /*getMenuInflater().inflate(R.menu.search_menu, menu);
         MenuItem mSearch = menu.findItem(R.id.appSearchBar);
         final SearchView mSearchView = (SearchView) mSearch.getActionView();
         mSearchView.setQueryHint("Search");
@@ -171,7 +171,8 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                 return true;
             }
         });
-        return super.onCreateOptionsMenu(menu);
+        return super.onCreateOptionsMenu(menu);*/
+        return false;
     }
 
 

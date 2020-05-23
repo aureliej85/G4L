@@ -94,11 +94,11 @@
 
     <RatingBar
         android:id="@+id/item_ratingBar"
-        style="?android:attr/ratingBarStyleSmall"
         android:layout_width="48dp"
         android:layout_height="14dp"
         android:layout_marginEnd="2dp"
         android:layout_marginBottom="7dp"
+        style="?android:attr/ratingBarStyleSmall"
         android:numStars="3"
         android:theme="@style/RatingBar"
         app:layout_constraintBottom_toBottomOf="parent"

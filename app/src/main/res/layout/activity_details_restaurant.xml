@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/picDetailsIv"
-        android:layout_width="410dp"
-        android:layout_height="277dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:adjustViewBounds="true"
         android:maxHeight="300dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -54,7 +54,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
+        android:layout_height="90dp"
         android:background="@color/colorPrimaryDark"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/picDetailsIv">
@@ -64,14 +64,27 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="23dp"
             android:fontFamily="@font/roboto"
+            android:maxLines="2"
             android:text="La Girafle Courte"
             android:textAlignment="viewStart"
             android:textColor="#FFFFFF"
             android:textSize="18sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <RatingBar
+            android:id="@+id/ratingBarDetail"
+            style="?android:attr/ratingBarStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="26dp"
+            android:numStars="3"
+            android:theme="@style/RatingBar"
+            app:layout_constraintStart_toEndOf="@+id/titleDetailTv"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
@@ -110,10 +123,10 @@
             android:id="@+id/callTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="98dp"
+            android:layout_marginStart="60dp"
             android:text="CALL"
             android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintEnd_toStartOf="@+id/likeDetailTv"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/phoneDetail" />
 
         <ImageView
@@ -155,11 +168,11 @@
             android:id="@+id/websiteTv"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="80dp"
             android:layout_marginTop="11dp"
+            android:layout_marginEnd="53dp"
             android:text="WEBSITE"
             android:textColor="@color/colorPrimaryDark"
-            app:layout_constraintStart_toEndOf="@+id/likeDetailTv"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/websiteDetail" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 

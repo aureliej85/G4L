@@ -90,7 +90,7 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private Location mLastKnownLocation;
     private LocationCallback locationCallback;
     private int PERMISSION_ID = 44;
-    private Marker m;
+    private Marker marker;
     private LocationRequest locationRequest;
     private double latitude;
     private double longitude;
@@ -110,6 +110,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
     private double lat;
     private double lgt;
     private int REQUEST_CODE_LOCATION = 45;
+    private String placeId;
+    private DetailsResult detailsResult;
 
 
 
@@ -120,11 +122,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
         SupportMapFragment mapFragment = (SupportMapFragment) this.getChildFragmentManager().findFragmentById(R.id.mapFragment);
         mapFragment.getMapAsync(this);
         mapView = mapFragment.getView();
-
         CheckGooglePlayServices();
         listViewModel = ViewModelProviders.of(this).get(ListViewModel.class);
         restaurantViewModel = ViewModelProviders.of(this).get(RestaurantViewModel.class);
-       // getMarkers();
         getMarkersWithPosition();
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext()); // get current location of the device
@@ -185,38 +185,13 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                 }
             }
         });
+
+        mMap.setOnMarkerClickListener(this::onMarkerClick);
     }
 
 
-  /* private void getMarkers(){
-        // GET RESTAURANTS ACCORDING TO USER CURRENT LOCATION
-        Log.e("ListFragment", "onSuccess: " );
-       userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-           @Override
-           public void onSuccess(DocumentSnapshot documentSnapshot) {
-               user = documentSnapshot.toObject(User.class);
 
-               //lat = user.getLatitude();
-               //lgt = user.getLongitude();
-               //userPosition = lat + "," + lgt;
-
-               listViewModel.getRestaurants("48.858411,2.912251").observe(getActivity(), restaurantsResponse -> {
-                   if (restaurantsResponse != null) {
-                       Log.e("ListFragment", "onSuccess: " );
-                       List<DetailsResult> restaurants = restaurantsResponse.getResults();
-
-                       for(int i = 0;i < restaurants.size(); i++){
-                           createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName());
-                       }
-                   }
-               });
-           }
-       });
-    }*/
-
-
-
-   protected void  createMarker(double latitude, double longitude, String title) {
+   protected void  createMarker(double latitude, double longitude, String title, String placeId) {
 
        CollectionReference wmRef = db.collection("users");
        wmRef.whereEqualTo("placeName", title).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -224,9 +199,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
            public void onComplete(@NonNull Task<QuerySnapshot> task) {
                if(task.isSuccessful()){
 
-                   mMap.addMarker(new MarkerOptions()
+                  marker =  mMap.addMarker(new MarkerOptions()
                            .position(new LatLng(latitude, longitude))
-                           //.anchor(0.5f, 0.5f)
                            .title(title)
                            //.snippet(snippet)
                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
@@ -234,65 +208,18 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                    for (QueryDocumentSnapshot document : task.getResult()) {
                        Log.e("MapFragment", document.getId() + " => " + document.getData());
 
-                            //if(document.getData().get("placeName").equals(title)){
-                                mMap.addMarker(new MarkerOptions()
+                                marker = mMap.addMarker(new MarkerOptions()
                                         .position(new LatLng(latitude, longitude))
-                                        //.anchor(0.5f, 0.5f)
                                         .title(title)
                                         //.snippet(snippet)
                                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                            /*} else {
-                                mMap.addMarker(new MarkerOptions()
-                                        .position(new LatLng(latitude, longitude))
-                                        //.anchor(0.5f, 0.5f)
-                                        .title(title)
-                                        //.snippet(snippet)
-                                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                            }*/
-
-
                    }
-
-
-
-               } else {
-                   mMap.addMarker(new MarkerOptions()
-                           .position(new LatLng(latitude, longitude))
-                           //.anchor(0.5f, 0.5f)
-                           .title(title)
-                           //.snippet(snippet)
-                           .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
                }
-
+               marker.setTag(placeId);
            }
+
        });
 
-
-
-
-       /*userRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-            @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                user = documentSnapshot.toObject(User.class);
-
-                if(user.getPlaceName().contains(title)) {
-
-                        mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(latitude, longitude))
-                                .anchor(0.5f, 0.5f)
-                                .title(title)
-                                //.snippet(snippet)
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                    } else {
-                        mMap.addMarker(new MarkerOptions()
-                                .position(new LatLng(latitude, longitude))
-                                .anchor(0.5f, 0.5f)
-                                .title(title)
-                                //.snippet(snippet)
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
-                    }
-            }
-        });*/
     }
 
 
@@ -338,10 +265,14 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                                                     List<DetailsResult> restaurants = restaurantsResponse.getResults();
 
                                                     for(int i = 0;i < restaurants.size(); i++){
-                                                        createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName());
+                                                        createMarker(restaurants.get(i).getGeometry().getLocation().getLat(), restaurants.get(i).getGeometry().getLocation().getLng(), restaurants.get(i).getName(), restaurants.get(i).getPlaceId());
                                                     }
+
                                                 }
                                             });
+
+
+
                                         }
                                     });
 
@@ -349,6 +280,9 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                         Looper.getMainLooper() );
 
     }
+
+
+
 
 
     // ---------------
@@ -371,11 +305,6 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
             }
         }
     }
-
-
-
-
-
 
 
     @Override
@@ -408,11 +337,8 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
                             public void onComplete(@NonNull Task<Location> task) {
 
                                 if (mLastKnownLocation != null) {
-
                                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
-
                                 } else {
-
                                     isGpsEnabled();
 
                                     locationCallback = new LocationCallback() {
@@ -450,10 +376,17 @@ public class MapsFragment extends BaseFragment implements OnMapReadyCallback, Go
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        Intent intent = new Intent(getContext(), DetailsActivity.class);
-        DetailsResult tag = (DetailsResult) marker.getTag();
-        intent.putExtra("id", tag.getPlaceId());
-        startActivity(intent);
-        return false;
+
+        if (marker.getTag() != null){
+            Log.e("MapFragment", "onClickMarker: " + marker.getTag() );
+            Intent intent = new Intent(getActivity(), DetailsActivity.class);
+            intent.putExtra("placeId", marker.getTag().toString());
+            startActivity(intent);
+            return true;
+        }else{
+            Log.e("MapFragemnt", "onClickMarker: ERROR NO TAG" );
+            return false;
+        }
+
     }
 }

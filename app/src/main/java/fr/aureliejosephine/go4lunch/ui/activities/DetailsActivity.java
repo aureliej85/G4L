@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.bumptech.glide.Glide;
@@ -28,7 +29,11 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -58,6 +63,7 @@ public class DetailsActivity extends BaseActivity {
     private ImageView starLike;
     private ImageView heartLike;
     private TextView likeTv;
+    private RatingBar ratingBar;
     private User user;
     private Restaurant restaurant;
     private UserViewModel userViewModel;
@@ -98,8 +104,12 @@ public class DetailsActivity extends BaseActivity {
         clickOnWebsiteButton();
         clickOnLikeButton();
         heartNotif();
+
+        Date currentTime = Calendar.getInstance().getTime();
+        Log.e(TAG, "onCreate: " + currentTime.toString());
     }
 
+    
 
     public void initViews(){
         picDetails = findViewById(R.id.picDetailsIv);
@@ -111,6 +121,7 @@ public class DetailsActivity extends BaseActivity {
         starLike = findViewById(R.id.starDetail);
         heartLike = findViewById(R.id.heartDetail);
         likeTv = findViewById(R.id.likeDetailTv);
+        ratingBar = findViewById(R.id.ratingBarDetail);
     }
 
     public void configViewModel(){
@@ -126,6 +137,16 @@ public class DetailsActivity extends BaseActivity {
                 titleDetails.setText(detailRestaurant.getResult().getName());
                 addressDetails.setText(detailRestaurant.getResult().getVicinity());
 
+                if (detailRestaurant.getResult().getRating() != null){
+                    double googleRating = detailRestaurant.getResult().getRating();
+                    double rating = (googleRating * 3) / 5;
+                    ratingBar.setRating((float)rating);
+                    ratingBar.setVisibility(View.VISIBLE);
+                    Log.e("ListAdapter", "getRating " + detailRestaurant.getResult().getPlaceId());
+                }else{
+                    ratingBar.setVisibility(View.GONE);
+                }
+
                 restaurantRef = db.collection("restaurants").document(detailRestaurant.getResult().getId());
                 restaurantRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                     @Override
@@ -134,10 +155,12 @@ public class DetailsActivity extends BaseActivity {
 
                         Glide.with(getApplication()).load(restaurant.getUrlPhoto())
                                 .into(picDetails);
+
                     }
                 });
         }
     });}
+
 
     public void greenCheck(){
 
@@ -192,6 +215,11 @@ public class DetailsActivity extends BaseActivity {
                                 Log.i("DetailsActivity", "onFailure: " + e.toString());
                             }
                         });
+
+
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("date", FieldValue.serverTimestamp());
+                        userRef.update(map);
                     }
                 });
             }

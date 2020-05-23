@@ -21,5 +21,11 @@ public interface PlaceApi {
     @GET("distancematrix/json?units=metric&key=" + API_KEY)
     Call<DistanceApiResponse> getDistance(@Query("origins") String originCoord, @Query("destinations") String destPlaceId);
 
+    @GET("place/queryautocomplete/json?")
+    Call<DetailsApiResponse> getAutocompleteRestaurants (@Query("key") String key,
+                                                           @Query("input") String input/*,
+                                                           @Query("location") String location,
+                                                           @Query("radius") int radius*/);
+
 
 }

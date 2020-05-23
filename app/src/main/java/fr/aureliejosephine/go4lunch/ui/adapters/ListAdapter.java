@@ -238,7 +238,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
             //OPEN HOUR
-           /*if (result.getOpeningHours() != null ){
+           if (result.getOpeningHours() != null ){
                 if(result.getOpeningHours().getOpenNow()){
                     String hour = result.getOpeningHours().getOpenNow().toString();
                     hoursTv.setText("Open" );
@@ -248,11 +248,11 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                     hoursTv.setTextColor(Color.RED);
                     Log.e("ListAdapter", "Opening Hour close: " );
                 }
-            }*/
+            }
 
 
             // Display Opening Hours
-            if (result.getOpeningHours() != null){
+            /*if (result.getOpeningHours() != null){
                 if (result.getOpeningHours().getOpenNow().toString().equals("false")){
                     displayOpeningHour("CLOSED",null);
                 }else{
@@ -260,13 +260,13 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
                 }
             }else{
                 displayOpeningHour("OPENING_HOURS_NOT_KNOW",null);
-            }
+            }*/
 
 
             // GET RATING
             if (result.getRating() != null){
                 double googleRating = result.getRating();
-                double rating = googleRating / 5 * 3;
+                double rating = (googleRating * 3) / 5;
                 ratingBar.setRating((float)rating);
                 ratingBar.setVisibility(View.VISIBLE);
                 Log.e("ListAdapter", "getRating " + result.getPlaceId());
@@ -308,7 +308,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
        //////////////////////////////// OPENIN HOUR DETAIL
 
 
-        private void getOpeningHoursInfo(DetailsResult result){
+      /*  private void getOpeningHoursInfo(DetailsResult result){
             int daysArray[] = {0,1,2,3,4,5,6};
 
             Calendar calendar = Calendar.getInstance();
@@ -386,7 +386,7 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
             Calendar c = Calendar.getInstance();
             SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
             return df.format(c.getTime());
-        }
+        }*/
 
 
 
