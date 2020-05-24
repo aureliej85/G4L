@@ -224,8 +224,10 @@ public class ListAdapter extends RecyclerView.Adapter<ListAdapter.ListViewHolder
 
 
             // Nb Users
+            SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy");
+            String givenDateString = sdf.format(Calendar.getInstance().getTime());
             CollectionReference wmRef = db.collection("users");
-            wmRef.whereEqualTo("placeName", result.getName()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            wmRef.whereEqualTo("date", givenDateString).whereEqualTo("placeName", result.getName()).get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                 @Override
                 public void onComplete(@NonNull Task<QuerySnapshot> task) {
                     if (task.isSuccessful()) {

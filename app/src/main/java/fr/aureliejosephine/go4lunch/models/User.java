@@ -1,6 +1,9 @@
 package fr.aureliejosephine.go4lunch.models;
 
 
+import com.google.firebase.firestore.ServerTimestamp;
+
+import java.util.Date;
 import java.util.List;
 
 import androidx.annotation.Nullable;
@@ -19,6 +22,7 @@ public class User {
     private List<String> restaurantsLiked;
     private double latitude;
     private double longitude;
+    private String date;
 
     public User() { }
 
@@ -35,7 +39,7 @@ public class User {
         this.email = uEmail;
     }
 
-    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked, Double latitude, Double longitude) {
+    public User(String uid, String username, String picture, String uEmail, String placeId, String placeName, List<String> restaurantsLiked, Double latitude, Double longitude, String date) {
         this.uid = uid;
         this.username = username;
         this.picture = picture;
@@ -45,6 +49,7 @@ public class User {
         this.restaurantsLiked = restaurantsLiked;
         this.latitude = latitude;
         this.longitude = longitude;
+        this.date = date;
     }
 
     // --- GETTERS ---
@@ -69,6 +74,9 @@ public class User {
     public double getLongitude() {
         return longitude;
     }
+    public String getDate() {
+        return date;
+    }
 
     // --- SETTERS ---
     public void setUsername(String username) { this.username = username; }
@@ -91,5 +99,8 @@ public class User {
     }
     public void setLongitude(double longitude) {
         this.longitude = longitude;
+    }
+    public void setDate(String date) {
+        this.date = date;
     }
 }

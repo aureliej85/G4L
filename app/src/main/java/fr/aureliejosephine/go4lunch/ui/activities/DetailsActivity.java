@@ -28,6 +28,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -105,8 +108,12 @@ public class DetailsActivity extends BaseActivity {
         clickOnLikeButton();
         heartNotif();
 
-        Date currentTime = Calendar.getInstance().getTime();
-        Log.e(TAG, "onCreate: " + currentTime.toString());
+        DateFormat df = new SimpleDateFormat("d MMM yyyy à HH:mm:ss");
+        String date = df.format(Calendar.getInstance().getTime());
+
+        //Date currentTime = Calendar.getInstance().getTime();
+        Log.e(TAG, "onCreate: " + date);
+
     }
 
     
@@ -217,9 +224,10 @@ public class DetailsActivity extends BaseActivity {
                         });
 
 
-                        Map<String, Object> map = new HashMap<>();
-                        map.put("date", FieldValue.serverTimestamp());
-                        userRef.update(map);
+                        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy");
+                        String givenDateString = sdf.format(Calendar.getInstance().getTime());
+                        //String test = "20 mai 2020";
+                        userRef.update("date", givenDateString);
                     }
                 });
             }
@@ -338,8 +346,11 @@ public class DetailsActivity extends BaseActivity {
     }
 
     public void ConfigFirestoreRecyclerAdapter(){
-
-            Query query = firebaseFirestore.collectionGroup("users").whereEqualTo("placeId", placeId);
+        SimpleDateFormat sdf = new SimpleDateFormat("d MMM yyyy");
+        String givenDateString = sdf.format(Calendar.getInstance().getTime());
+            //Query query = firebaseFirestore.collectionGroup("users").whereEqualTo("placeId", placeId);
+        Query query = firebaseFirestore.collection("users").whereEqualTo("date", givenDateString)
+                .whereEqualTo("placeId", placeId);
             FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
                     .setQuery(query, User.class)
                     .build();

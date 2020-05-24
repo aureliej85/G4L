@@ -1,5 +1,6 @@
 package fr.aureliejosephine.go4lunch.ui.adapters;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +11,11 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import fr.aureliejosephine.go4lunch.R;
@@ -27,6 +33,7 @@ public class DetailsAdapter extends FirestoreRecyclerAdapter<User, DetailsAdapte
 
 
         holder.descrTv.setText(model.getUsername() + " is joining");
+
 
         Glide.with(holder.userPic.getContext()).load(model.getPicture())
                 .apply(RequestOptions.circleCropTransform())

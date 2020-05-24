@@ -54,16 +54,26 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class MainActivity extends BaseActivity implements NavigationView.OnNavigationItemSelectedListener{
 
@@ -109,6 +119,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new MapsFragment()).commit(); // FRAGMENT CONTAINER
 
     }
+
 
 
     private void configureBottomMenu(){
@@ -431,7 +442,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                                         String uid = getCurrentUser().getUid();
                                         String uEmail = getCurrentUser().getEmail();
 
-                                        userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, "none", null, latitude, longitude);
+                                        userViewModel.CreateUser(uid, username, urlPicture, uEmail, null, "none", null, latitude, longitude, null);
 
                                     }
 
